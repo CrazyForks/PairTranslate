@@ -103,9 +103,7 @@ export function createOpenAIClient(config: ClientConfig): LLMClient {
 						...(reasoningConfig.reasoningEffort && {
 							reasoning_effort: reasoningConfig.reasoningEffort,
 						}),
-						...(typeof request.extraBody === "object"
-							? request.extraBody
-							: {}),
+						...(typeof request.extraBody === "object" ? request.extraBody : {}),
 						...(typeof reasoningConfig.extraBody === "object"
 							? reasoningConfig.extraBody
 							: {}),
@@ -169,9 +167,7 @@ export function createOpenAIClient(config: ClientConfig): LLMClient {
 						...(reasoningConfig.reasoningEffort && {
 							reasoning_effort: reasoningConfig.reasoningEffort,
 						}),
-						...(typeof request.extraBody === "object"
-							? request.extraBody
-							: {}),
+						...(typeof request.extraBody === "object" ? request.extraBody : {}),
 						...(typeof reasoningConfig.extraBody === "object"
 							? reasoningConfig.extraBody
 							: {}),
