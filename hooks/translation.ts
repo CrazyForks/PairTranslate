@@ -4,6 +4,7 @@ import {
 	createMemo,
 	createSignal,
 	onCleanup,
+	type Setter,
 	untrack,
 } from "solid-js";
 import { createStore } from "solid-js/store";
@@ -14,6 +15,7 @@ import {
 	TranslateErrorType,
 } from "~/utils/errors";
 import { t } from "~/utils/i18n";
+import type { PromptId, PromptOutput } from "~/utils/prompt/id";
 import type { TranslateContext } from "~/utils/types";
 import { mightUseProgressIndicator } from "./progress-indicator";
 
@@ -74,10 +76,15 @@ const batchMismatchError = (exp: number, got: number) =>
 		`Expected ${exp} translations, but got ${got}`,
 	);
 
+/** Batch translation needs a prompt whose parsed output is one entry per input. */
+type BatchPromptId = {
+	[Id in PromptId]: PromptOutput<Id> extends string[] ? Id : never;
+}[PromptId];
+
 export function createBatchTranslation(
 	text: () => string[],
 	options: {
-		promptId: string;
+		promptId: BatchPromptId;
 		modelId: () => string | undefined;
 		srcLang: () => string | undefined;
 		dstLang: () => string;
@@ -278,33 +285,38 @@ type SingleStreamReturn<T> = readonly [
 	retry: () => void,
 ];
 
-export function createTranslation<T = string>(
+/**
+ * Streaming accumulates raw text chunks, so the result is always a string —
+ * parsing structured output is the caller's business.
+ */
+export function createTranslation(
 	text: () => string,
 	options: {
 		stream: true;
-		promptId: string;
+		promptId: PromptId;
 		modelId: () => string | undefined;
 		srcLang: () => string | undefined;
 		dstLang: () => string;
 		ctx?: () => TranslateContext;
 	},
-): SingleStreamReturn<T>;
-export function createTranslation<T>(
+): SingleStreamReturn<string>;
+/** A completed request resolves to whatever the prompt's `parse` produces. */
+export function createTranslation<Id extends PromptId>(
 	text: () => string,
 	options: {
 		stream?: false;
 		modelId: () => string | undefined;
 		srcLang: () => string | undefined;
 		dstLang: () => string;
-		promptId: string;
+		promptId: Id;
 		ctx?: () => TranslateContext;
 	},
-): SingleReturn<T>;
+): SingleReturn<PromptOutput<Id>>;
 export function createTranslation<T>(
 	text: () => string,
 	options: {
 		stream?: boolean;
-		promptId: string;
+		promptId: PromptId;
 		modelId: () => string | undefined;
 		srcLang: () => string | undefined;
 		dstLang: () => string;
@@ -383,8 +395,11 @@ export function createTranslation<T>(
 					const content = chunk.content;
 					const reasoning = chunk.reasoning;
 					if (content) {
-						// @ts-ignore stream request must return string chunks
-						setResult((prev) => (prev || "") + content);
+						// The streaming overload pins the result to `string`; inside this
+						// shared implementation body `T` is still generic.
+						(setResult as unknown as Setter<string>)(
+							(prev) => (prev || "") + content,
+						);
 						setLen((prev: number) => prev + content.length);
 					}
 					if (reasoning) {

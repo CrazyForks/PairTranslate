@@ -14,27 +14,18 @@ import { computeCacheKey } from "~/utils/hasher";
 import type {
 	ChatRequest,
 	ClientConfig,
-	JSONSchema,
 	LLMClient,
 	LLMProvider,
 } from "~/utils/llm";
 import { createLLMClient } from "~/utils/llm";
 import { appendReasoningContent } from "~/utils/llm/reasoning";
-import type { PromptStepOutput } from "~/utils/prompt/delimiter";
+import { PROMPTS } from "~/utils/prompt";
 import {
-	type CompiledPrompt,
-	compilePrompt,
-	initializeConversation,
-	normalizeLLMStepOutput,
-	normalizePromptInput,
-	normalizeStreamAggregate,
-	snapshotConversation,
-	toTextArray,
-} from "~/utils/prompt/engine";
-import {
-	buildContextWithTranslateParams,
-	tokensToString,
-} from "~/utils/prompt/parser";
+	type AnyPromptDef,
+	buildPromptContext,
+	normalizeInput,
+} from "~/utils/prompt/dsl";
+import type { PromptId } from "~/utils/prompt/id";
 import type { TranslateOptions, TranslateService } from "~/utils/rpc";
 import type { ServiceSettings } from "~/utils/settings";
 import { getSettings, listenSettings } from "~/utils/settings/helper";
@@ -93,13 +84,21 @@ const buildLLMClient = (
 	}
 };
 
-const isStructuredOutput = (
-	output: PromptStepOutput,
-): output is { type: "structured"; schema: object } =>
-	typeof output === "object" &&
-	output !== null &&
-	"type" in output &&
-	output.type === "structured";
+const toTextArray = (text: TranslatePayload): string[] =>
+	Array.isArray(text) ? text : text ? [text] : [];
+
+const resolvePrompt = (promptId: PromptId): AnyPromptDef => {
+	// `promptId` crosses the RPC boundary, so the union is a compile-time
+	// contract only — the runtime check stays.
+	const def = PROMPTS[promptId];
+	if (!def) {
+		throw createTranslateError(
+			TranslateErrorType.INVALID_PROMPT,
+			`Prompt ${promptId} is not a known prompt.`,
+		);
+	}
+	return def;
+};
 
 const ensureServiceModel = (
 	service: Extract<ServiceSettings, { type: "llm" }>,
@@ -134,7 +133,6 @@ export const createTranslateService = async (): Promise<TranslateService> => {
 		throw new Error("Settings not initialized");
 	}
 
-	const promptCache = new Map<string, CompiledPrompt>();
 	const clientCache = new Map<string, LLMClient>();
 	const resultCache = createLRUStorage<CachedValue>(
 		"translate-cache",
@@ -220,21 +218,6 @@ export const createTranslateService = async (): Promise<TranslateService> => {
 		return service;
 	};
 
-	const getPrompt = (promptId: string): CompiledPrompt => {
-		const cached = promptCache.get(promptId);
-		if (cached) return cached;
-		const prompt = settings.prompts[promptId];
-		if (!prompt) {
-			throw createTranslateError(
-				TranslateErrorType.INVALID_PROMPT,
-				`Prompt ${promptId} not found. Please check your settings.`,
-			);
-		}
-		const compiled = compilePrompt(prompt);
-		promptCache.set(promptId, compiled);
-		return compiled;
-	};
-
 	const getQueueConfig = (modelId: string) => {
 		const base = settings.queue;
 		const override = settings.services[modelId]?.queue;
@@ -270,7 +253,6 @@ export const createTranslateService = async (): Promise<TranslateService> => {
 
 	listenSettings((next) => {
 		settings = next;
-		promptCache.clear();
 		clientCache.clear();
 		queueHub.refresh();
 		resultCache.resize(next.queue.cacheSize);
@@ -375,10 +357,24 @@ export const createTranslateService = async (): Promise<TranslateService> => {
 		};
 	};
 
-	const runLLMSteps = async (
+	/** Build the two-message conversation a prompt turns into. */
+	const buildMessages = (
+		def: AnyPromptDef,
+		promptCtx: ReturnType<typeof buildPromptContext>,
+	): ChatRequest["messages"] => {
+		const messages: ChatRequest["messages"] = [];
+		const system = def.system(promptCtx);
+		if (system) {
+			messages.push({ role: "system", content: system });
+		}
+		messages.push({ role: "user", content: def.user(promptCtx) });
+		return messages;
+	};
+
+	const runLLMOnce = async (
 		modelId: string,
 		service: Extract<ServiceSettings, { type: "llm" }>,
-		prompt: CompiledPrompt,
+		def: AnyPromptDef,
 		textPayload: TranslatePayload,
 		ctx: TranslateContext,
 		srcLang: string,
@@ -386,87 +382,71 @@ export const createTranslateService = async (): Promise<TranslateService> => {
 		signal?: AbortSignal,
 	): Promise<{ result: unknown; tokens: number; reasoning?: string }> => {
 		const client = ensureLLMClient(modelId, service);
-		const promptCtx = buildContextWithTranslateParams(
-			ctx,
-			{ src: srcLang, dst: dstLang },
-			textPayload,
-		);
-		const outputs: unknown[] = [];
-		promptCtx.output = outputs;
-		const conversation = initializeConversation(prompt, promptCtx);
-		let totalTokens = 0;
-		let reasoning: string | undefined;
-		let stepIndex = 0;
-		for (const step of prompt.steps) {
-			stepIndex += 1;
-			conversation.push({
-				role: "user",
-				content: tokensToString(promptCtx, step.messageTokens),
-			});
-			const request = createChatRequest(
-				service,
-				snapshotConversation(conversation),
+		const promptCtx = buildPromptContext(ctx, textPayload, srcLang, dstLang);
+		const messages = buildMessages(def, promptCtx);
+
+		traceLlms("request", {
+			service: service.name,
+			model: service.model ?? "(unset)",
+			stream: false,
+			snippet: preview(messages.at(-1)?.content ?? ""),
+		});
+
+		let response: Awaited<ReturnType<typeof client.chat>>;
+		try {
+			response = await client.chat(
+				createChatRequest(service, messages),
+				def.schema,
+				signal,
 			);
-			const latestMessage = conversation.at(-1);
-			traceLlms("request", {
-				service: service.name,
-				model: service.model ?? "(unset)",
-				step: stepIndex,
-				stream: false,
-				snippet:
-					typeof latestMessage?.content === "string"
-						? preview(latestMessage.content)
-						: undefined,
-			});
-			try {
-				const schema = isStructuredOutput(step.output)
-					? (step.output.schema as JSONSchema)
-					: undefined;
-				const response = await client.chat(request, schema, signal);
-				totalTokens +=
-					response.usage?.totalTokens ?? response.usage?.promptTokens ?? 0;
-				reasoning = appendReasoningContent(reasoning, response.reasoning);
-				const output = normalizeLLMStepOutput(step, response.output);
-				outputs.push(output);
-				conversation.push({
-					role: "assistant",
-					content: response.content ?? toStreamChunk(output),
-				});
-				traceLlms("response", {
-					service: service.name,
-					model: service.model ?? "(unset)",
-					step: stepIndex,
-					stream: false,
-					snippet:
-						typeof output === "string"
-							? preview(output)
-							: Array.isArray(output)
-								? `array(${output.length})`
-								: typeof output,
-					tokens:
-						response.usage?.totalTokens ??
-						response.usage?.completionTokens ??
-						response.usage?.promptTokens ??
-						0,
-				});
-			} catch (error) {
-				if (error instanceof Error && error.name === "AbortError") {
-					throw error;
-				}
-				throw convertFromLLMError(error);
+		} catch (error) {
+			if (error instanceof Error && error.name === "AbortError") {
+				throw error;
 			}
+			throw convertFromLLMError(error);
 		}
+
+		const raw = response.content ?? "";
+		let output: unknown;
+		try {
+			output = def.parse(raw);
+		} catch (error) {
+			throw createTranslateError(
+				TranslateErrorType.VALIDATION_ERROR,
+				`Prompt ${def.id} could not parse the model response: ${
+					error instanceof Error ? error.message : String(error)
+				}`,
+			);
+		}
+
+		traceLlms("response", {
+			service: service.name,
+			model: service.model ?? "(unset)",
+			stream: false,
+			snippet:
+				typeof output === "string"
+					? preview(output)
+					: Array.isArray(output)
+						? `array(${output.length})`
+						: typeof output,
+			tokens:
+				response.usage?.totalTokens ??
+				response.usage?.completionTokens ??
+				response.usage?.promptTokens ??
+				0,
+		});
+
 		return {
-			result: outputs.at(-1),
-			tokens: totalTokens,
-			reasoning,
+			result: output,
+			tokens: response.usage?.totalTokens ?? response.usage?.promptTokens ?? 0,
+			reasoning: appendReasoningContent(undefined, response.reasoning),
 		};
 	};
 
 	const runLLMStream = (
 		modelId: string,
 		service: Extract<ServiceSettings, { type: "llm" }>,
-		prompt: CompiledPrompt,
+		def: AnyPromptDef,
 		textPayload: TranslatePayload,
 		ctx: TranslateContext,
 		srcLang: string,
@@ -478,96 +458,22 @@ export const createTranslateService = async (): Promise<TranslateService> => {
 			signal?.throwIfAborted();
 
 			const client = ensureLLMClient(modelId, service);
-			const promptCtx = buildContextWithTranslateParams(
-				ctx,
-				{ src: srcLang, dst: dstLang },
-				textPayload,
-			);
-			const outputs: unknown[] = [];
-			promptCtx.output = outputs;
-			const conversation = initializeConversation(prompt, promptCtx);
-			const lastIndex = prompt.steps.length - 1;
-			for (let index = 0; index < lastIndex; index++) {
-				const step = prompt.steps[index];
-				conversation.push({
-					role: "user",
-					content: tokensToString(promptCtx, step.messageTokens),
-				});
-				const request = createChatRequest(
-					service,
-					snapshotConversation(conversation),
-				);
-				const latestMessage = conversation.at(-1);
-				traceLlms("request", {
-					service: service.name,
-					model: service.model ?? "(unset)",
-					step: index + 1,
-					stream: false,
-					snippet:
-						typeof latestMessage?.content === "string"
-							? preview(latestMessage.content)
-							: undefined,
-				});
-				try {
-					const schema = isStructuredOutput(step.output)
-						? (step.output.schema as JSONSchema)
-						: undefined;
-					const response = await client.chat(request, schema, signal);
-					const output = normalizeLLMStepOutput(step, response.output);
-					outputs.push(output);
-					conversation.push({
-						role: "assistant",
-						content: response.content ?? toStreamChunk(output),
-					});
-					traceLlms("response", {
-						service: service.name,
-						model: service.model ?? "(unset)",
-						step: index + 1,
-						stream: false,
-						snippet:
-							typeof output === "string"
-								? preview(output)
-								: Array.isArray(output)
-									? `array(${output.length})`
-									: typeof output,
-					});
-				} catch (error) {
-					if (error instanceof Error && error.name === "AbortError") {
-						throw error;
-					}
-					throw convertFromLLMError(error);
-				}
-			}
-			const finalStep = prompt.steps.at(-1);
-			if (!finalStep) {
-				throw createTranslateError(
-					TranslateErrorType.VALIDATION_ERROR,
-					"No steps available in the prompt. This should not happen.",
-				);
-			}
-			conversation.push({
-				role: "user",
-				content: tokensToString(promptCtx, finalStep.messageTokens),
-			});
-			const request = createChatRequest(
-				service,
-				snapshotConversation(conversation),
-				{ stream: true },
-			);
-			const latestPrompt = conversation.at(-1);
+			const promptCtx = buildPromptContext(ctx, textPayload, srcLang, dstLang);
+			const messages = buildMessages(def, promptCtx);
+			const request = createChatRequest(service, messages, { stream: true });
 			traceLlms("request", {
 				service: service.name,
 				model: service.model ?? "(unset)",
-				step: prompt.steps.length,
 				stream: true,
-				snippet:
-					typeof latestPrompt?.content === "string"
-						? preview(latestPrompt.content)
-						: undefined,
+				snippet: preview(messages.at(-1)?.content ?? ""),
 			});
 
 			const { promise: completion, resolve: resolveCompletion } =
 				Promise.withResolvers<number>();
+			// Schema is deliberately omitted while streaming: combining
+			// `response_format` with `stream` is rejected by some OpenAI-compatible
+			// endpoints, and callers reconstruct partial JSON themselves. Pass
+			// `def.schema` here if that ever changes.
 			const source = client.chatStream(request, undefined, signal);
 			return {
 				iterator: (async function* () {
@@ -621,13 +527,12 @@ export const createTranslateService = async (): Promise<TranslateService> => {
 		const service = resolveService(modelId);
 		const payload = text ?? "";
 		const expectsArray = Array.isArray(payload);
-		const compiled = service.type === "llm" ? getPrompt(promptId) : undefined;
+		const def = resolvePrompt(promptId);
 		const payloadArray = Array.isArray(payload) ? payload : undefined;
 		const supportsThinCache =
 			Boolean(options.thinCache) &&
 			!!payloadArray &&
-			(service.type === "traditional" ||
-				(service.type === "llm" && compiled?.input === "stringArray"));
+			(service.type === "traditional" || def.input === "stringArray");
 
 		const cacheKey = await computeCacheKey(
 			promptId,
@@ -726,11 +631,9 @@ export const createTranslateService = async (): Promise<TranslateService> => {
 				? thinCacheState.missing.map((index) => payloadArray[index])
 				: payload;
 		const normalizedPayload =
-			service.type === "llm" && compiled
-				? normalizePromptInput(compiled, executionPayload)
-				: Array.isArray(executionPayload)
-					? executionPayload
-					: executionPayload;
+			service.type === "llm"
+				? normalizeInput(def.input, executionPayload)
+				: executionPayload;
 		let translationResult: unknown;
 		let completionTokens = 0;
 		let reasoning: string | undefined;
@@ -760,11 +663,10 @@ export const createTranslateService = async (): Promise<TranslateService> => {
 			translationResult = traditionalResult.result;
 			completionTokens = traditionalResult.tokens;
 		} else {
-			const compiledPrompt = compiled ?? getPrompt(promptId);
-			const llmResult = await runLLMSteps(
+			const llmResult = await runLLMOnce(
 				modelId,
 				service,
-				compiledPrompt,
+				def,
 				normalizedPayload,
 				ctx,
 				options.srcLang,
@@ -846,11 +748,10 @@ export const createTranslateService = async (): Promise<TranslateService> => {
 		) {
 			const payload = text ?? "";
 			const service = resolveService(options.modelId);
-			const prompt =
-				service.type === "llm" ? getPrompt(options.promptId) : undefined;
-			const normalized = prompt
-				? normalizePromptInput(prompt, payload)
-				: (payload ?? "");
+			const normalized =
+				service.type === "llm"
+					? normalizeInput(resolvePrompt(options.promptId).input, payload)
+					: payload;
 			const estimated = estimateTokens(normalized);
 			const queue = queueHub.queue(options.modelId);
 			return queue.enqueueUnary(
@@ -869,12 +770,8 @@ export const createTranslateService = async (): Promise<TranslateService> => {
 			const promptId = options.promptId;
 			const service = resolveService(modelId);
 			const payload = text ?? "";
-			const compiledPrompt =
-				service.type === "llm" ? getPrompt(promptId) : undefined;
-			const normalized =
-				service.type === "llm" && compiledPrompt
-					? normalizePromptInput(compiledPrompt, payload)
-					: payload;
+			const def = service.type === "llm" ? resolvePrompt(promptId) : undefined;
+			const normalized = def ? normalizeInput(def.input, payload) : payload;
 
 			debugLog("stream/start", {
 				modelId,
@@ -883,8 +780,8 @@ export const createTranslateService = async (): Promise<TranslateService> => {
 			});
 			return (async function* () {
 				const cacheKey = await computeCacheKey(
-					modelId,
 					promptId,
+					modelId,
 					text,
 					ctx,
 					options.srcLang,
@@ -915,14 +812,13 @@ export const createTranslateService = async (): Promise<TranslateService> => {
 				}
 				const queue = queueHub.queue(modelId);
 				const estimated = estimateTokens(normalized);
-				const finalStep = compiledPrompt?.steps.at(-1);
 				let traditionalResult: string[] | undefined;
 				const streamRunner =
 					service.type === "llm"
 						? runLLMStream(
 								modelId,
 								service,
-								compiledPrompt ?? getPrompt(promptId),
+								def ?? resolvePrompt(promptId),
 								normalized,
 								ctx,
 								options.srcLang,
@@ -953,12 +849,11 @@ export const createTranslateService = async (): Promise<TranslateService> => {
 						yield chunk;
 					}
 					if (service.type === "llm") {
-						const normalizedOutput = normalizeStreamAggregate(
-							finalStep,
-							translationAggregate,
-						);
+						// Cache the raw text, not a parsed value: cache hits are replayed
+						// as stream chunks, and callers parse the accumulated string
+						// themselves. `def.parse` runs only on the unary path.
 						await setCacheEntry(cacheKey, {
-							output: normalizedOutput,
+							output: translationAggregate,
 							reasoning: reasoningAggregate || undefined,
 						});
 					} else if (traditionalResult) {

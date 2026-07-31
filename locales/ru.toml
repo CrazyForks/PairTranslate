@@ -9,7 +9,6 @@ basic = "Основные Параметры"
 translation = "Сервисы Перевода"
 flowControl = "Контроль Потока"
 llmServices = "Сервисы LLM"
-promptSettings = "Параметры Подсказок"
 traditionalServices = "Традиционный Перевод"
 websiteRules = "Правила Веб-сайтов"
 advanced = "Дополнительные Параметры"
@@ -228,14 +227,6 @@ inTextTranslateIcon = "Показывать значок перевода в т�
 inTextTranslateIconDesc = "Показывать значок перевода перед каждым переведённым абзацем"
 selectionTranslateEnabled = "$1 + клик/перетаскивание мыши для перевода"
 selectionTranslateHintSuffix = "+ клик/перетаскивание мыши для перевода"
-
-[settings.prompt]
-title = "Параметры Подсказок"
-openManager = "Открыть Менеджер Подсказок"
-pageTitle = "Менеджер Подсказок"
-placeholderDescription = "Настройка подсказок скоро будет доступна. Вы сможете редактировать и организовывать подсказки на этой странице в будущем обновлении."
-backToSettings = "Вернуться к Параметрам"
-
 [settings.flowControl]
 title = "Контроль Потока"
 description = "Настройте глобальную пропускную способность очереди, ограничения скорости и кеширование для каждой модели перевода."
@@ -272,7 +263,6 @@ temperature = "Температура"
 thinkingBudget = "Бюджет на рассуждение"
 extraBody = "Дополнительное тело запроса"
 
-
 [settings.llmModal]
 addTitle = "Добавить Сервис LLM"
 editTitle = "Редактировать Сервис LLM"
@@ -292,7 +282,6 @@ thinkingBudget = "Бюджет на рассуждение"
 thinkingBudgetDefault = "По умолчанию"
 customService = "Пользовательский"
 extraBody = "Дополнительное тело запроса"
-
 
 [settings.llmModal.thinkingBudgetOptions]
 off = "Выкл."
@@ -496,100 +485,6 @@ textExplanation = "Объяснение Текста"
 examples = "Примеры"
 translation = "Перевод"
 reasoning = "Рассуждение"
-
-[prompts.defaultNames]
-translate = "Перевести"
-batchTranslate = "Пакетный Перевод"
-inputTranslate = "Перевод Входных Данных"
-explain = "Объяснить"
-dictionaryTranslate = "Словарный Перевод"
-
-# Prompt Studio
-
-[promptStudio]
-title = "Студия подсказок"
-selectPrompt = "Сначала выберите подсказку."
-selectLLM = "Выберите LLM."
-modelMissing = "Модель отсутствует."
-templates = "Шаблоны"
-preview = "Предпросмотр"
-runPreview = "Запустить предпросмотр"
-addStep = "Добавить шаг"
-deleteStep = "Удалить шаг"
-reset = "Перезагрузить"
-promptName = "Имя подсказки"
-systemPrompt = "Системная подсказка"
-contextVariables = "Переменные контекста"
-pageTitle = "Заголовок страницы"
-pageUrl = "URL страницы"
-surroundingBefore = "До"
-surroundingAfter = "После"
-customVariables = "Пользовательские переменные"
-resolvedMapping = "Разрешенное сопоставление"
-empty = "Пусто"
-in = "Вход"
-out = "Выход"
-reasoning = "Рассуждение"
-trace = "Трассировка"
-systemPromptLabel = "Системная подсказка"
-result = "Результат"
-step = "Шаг $1"
-tracePlaceholder = "Трассировка выполнения еще недоступна. Запустите предпросмотр, чтобы увидеть пошаговые детали выполнения."
-previewPlaceholder = "Пока нет вывода. Запустите предпросмотр, чтобы увидеть результаты."
-insertVariable = "Вставить переменную"
-stepOutput = "Вывод шага"
-status = "Статус"
-idle = "Неактивно"
-running = "Выполняется"
-completed = "Завершено"
-error = "Ошибка"
-
-[promptStudio.placeholders]
-sampleText = "Перевести выделенный текст."
-sampleTextLabel = "Образец текста"
-pageTitle = "Объявление о продукте"
-pageUrl = "https://example.com/products/spark"
-surrBefore = "Видно сразу."
-surrAfter = "Перевод призыва к действию не требуется."
-selectModel = "Выберите LLM"
-enterURL = "https://example.com"
-keyPlaceholder = "Ключ"
-valuePlaceholder = "Значение"
-
-[promptStudio.templateSnippets]
-variables = "Переменные"
-conditionals = "Условия"
-loops = "Циклы"
-loopsWithoutKey = "Циклы без ключа"
-internalFunctions = "Внутренние функции"
-
-[promptStudio.contextLabels]
-text = "Текст"
-src = "Исходный язык"
-dst = "Целевой язык"
-title = "Заголовок"
-
-# Error Messages
-
-[promptStudio.outputModal]
-title = "Настроить вывод шага"
-typeLabel = "Тип выхода"
-string = "Строка"
-stringArray = "Массив строк"
-structured = "Структурированный JSON"
-stringDescription = "Обрабатывает ответ как одну строку."
-stringArrayDescription = "Разбивает ответ на массив, используя разделитель."
-delimiterLabel = "Разделитель"
-delimiterPlaceholder = "например, пустая строка"
-regexToggle = "Использовать разделитель регулярных выражений"
-regexPattern = "Шаблон регулярного выражения"
-regexFlags = "Флаги"
-structuredDescription = "Ожидаем корректный JSON от модели."
-schemaLabel = "JSON схема"
-schemaPlaceholder = "{ \"type\": \"object\" }"
-invalidSchema = "Схема должна быть корректным JSON."
-invalidRegex = "Требуется шаблон регулярного выражения."
-
 [errors]
 modelNotFound = "Модель с ID '$1' не найдена в параметрах"
 missingApiSpec = "Модель '$1' не имеет спецификации API"

@@ -2,7 +2,6 @@ import type { ServicesSettings } from "./def";
 import { SettingsSchema } from "./def";
 import {
 	generateDebugSettings,
-	generatePromptSettings,
 	generateQueueControlSettings,
 	generateTranslateSettings,
 } from "./default";
@@ -48,11 +47,19 @@ type LegacyTranslateSettings = {
 	inputTranslateLang: string;
 };
 
-type SettingsV1 = Omit<SettingsSchema, "debug"> & { __v: 1 };
+/**
+ * Prompts used to live in settings. They are static code now, so intermediate
+ * migration shapes only need to carry the field opaquely until v4 drops it.
+ */
+type WithLegacyPrompts = { prompts?: unknown };
 
-type LegacySettingsV0 = Omit<SettingsV1, "services" | "prompts"> & {
+type SettingsV1 = Omit<SettingsSchema, "debug"> &
+	WithLegacyPrompts & { __v: 1 };
+
+type SettingsV3 = SettingsSchema & WithLegacyPrompts;
+
+type LegacySettingsV0 = Omit<SettingsV1, "services"> & {
 	services?: LegacyServices;
-	prompts?: SettingsSchema["prompts"];
 	translate?: LegacyTranslateSettings;
 	__v?: number;
 };
@@ -77,8 +84,13 @@ export const migrateSettings = (raw: unknown): SettingsSchema => {
 			continue;
 		}
 		if (version === 2) {
-			working = migrateV2ToV3(working as SettingsSchema);
+			working = migrateV2ToV3(working as SettingsV3);
 			version = 3;
+			continue;
+		}
+		if (version === 3) {
+			working = migrateV3ToV4(working as SettingsV3);
+			version = 4;
 			continue;
 		}
 		throw new Error(`Unsupported settings version: ${version}`);
@@ -103,12 +115,11 @@ function migrateV0ToV1(oldSettings: LegacySettingsV0): SettingsV1 {
 		websiteRules: oldSettings.websiteRules ?? [],
 		queue,
 		services,
-		prompts: oldSettings.prompts ?? generatePromptSettings(),
 		__v: 1,
 	};
 }
 
-function migrateV1ToV2(oldSettings: SettingsV1): SettingsSchema {
+function migrateV1ToV2(oldSettings: SettingsV1): SettingsV3 {
 	return {
 		...oldSettings,
 		debug: generateDebugSettings(),
@@ -116,12 +127,23 @@ function migrateV1ToV2(oldSettings: SettingsV1): SettingsSchema {
 	};
 }
 
-function migrateV2ToV3(oldSettings: SettingsSchema): SettingsSchema {
-	// For v3 we reset prompts to the new defaults. Keep other settings as-is.
+/**
+ * v3 reset prompts to defaults. Prompts are no longer stored, so this is now
+ * only a version bump — kept so v2 installs still walk the chain.
+ */
+function migrateV2ToV3(oldSettings: SettingsV3): SettingsV3 {
 	return {
 		...oldSettings,
-		prompts: generatePromptSettings(),
 		__v: 3,
+	};
+}
+
+/** v4 drops the `prompts` slice; prompts are static code now. */
+function migrateV3ToV4(oldSettings: SettingsV3): SettingsSchema {
+	const { prompts: _dropped, ...rest } = oldSettings;
+	return {
+		...rest,
+		__v: 4,
 	};
 }
 

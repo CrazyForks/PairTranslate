@@ -1,6 +1,7 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: any type can be returned */
 
 import type { DictionaryResponse } from "./dictionary";
+import type { PromptId } from "./prompt/id";
 import type { RpcService } from "./rpc/factory";
 import type { TranslateContext, TranslateQueueStatus } from "./types";
 
@@ -25,7 +26,7 @@ export interface TranslateService extends RpcService {
 
 export interface TranslateOptions {
 	modelId: string;
-	promptId: string;
+	promptId: PromptId;
 	cleanCache?: boolean;
 	thinCache?: boolean;
 	srcLang: string;

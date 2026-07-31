@@ -29,11 +29,7 @@ import { SettingsRecoveryBanner } from "~/components/SettingsRecoveryBanner";
 import { SettingsProvider, useSettings } from "~/hooks/settings";
 import { createTheme } from "~/hooks/theme";
 import { createTranslation } from "~/hooks/translation";
-import {
-	getNativeName,
-	PROMPT_ID,
-	SUPPORTED_LANGUAGES,
-} from "~/utils/constants";
+import { getNativeName, SUPPORTED_LANGUAGES } from "~/utils/constants";
 import { t } from "~/utils/i18n";
 import { isApple } from "~/utils/isapple";
 import { selectServicesByType } from "~/utils/settings/services";
@@ -118,7 +114,7 @@ const SidebarContent = () => {
 
 	const [translateResult, retry] = createTranslation(submittedText, {
 		stream: true,
-		promptId: PROMPT_ID.translate,
+		promptId: "translate",
 		modelId: resolvedModelId,
 		srcLang: () => settingsCtx.settings.translate?.sourceLang,
 		dstLang: targetLang,

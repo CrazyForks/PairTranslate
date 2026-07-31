@@ -9,7 +9,6 @@ basic = "Paramètres de Base"
 translation = "Services de Traduction"
 flowControl = "Contrôle de Flux"
 llmServices = "Services LLM"
-promptSettings = "Paramètres des Invites"
 traditionalServices = "Traduction Traditionnelle"
 websiteRules = "Règles de Sites Web"
 advanced = "Paramètres Avancés"
@@ -228,14 +227,6 @@ inTextTranslateIcon = "Afficher l’icône de traduction dans le texte"
 inTextTranslateIconDesc = "Afficher l’icône de traduction avant chaque paragraphe traduit"
 selectionTranslateEnabled = "$1 + Clic/Glissement de souris pour traduire"
 selectionTranslateHintSuffix = "+ Clic/Glissement de souris pour traduire"
-
-[settings.prompt]
-title = "Paramètres des Invites"
-openManager = "Ouvrir le Gestionnaire d'Invites"
-pageTitle = "Gestionnaire d'Invites"
-placeholderDescription = "La personnalisation des invites arrive bientôt. Vous pourrez modifier et organiser les invites à partir de cette page dans une prochaine mise à jour."
-backToSettings = "Retour aux Paramètres"
-
 [settings.flowControl]
 title = "Contrôle de Flux"
 description = "Régler le débit global de la file d'attente, les limites de débit et la mise en cache pour chaque modèle de traduction."
@@ -272,7 +263,6 @@ temperature = "Température"
 thinkingBudget = "Budget de raisonnement"
 extraBody = "Corps de requête supplémentaire"
 
-
 [settings.llmModal]
 addTitle = "Ajouter un Service LLM"
 editTitle = "Modifier le Service LLM"
@@ -292,7 +282,6 @@ thinkingBudget = "Budget de raisonnement"
 thinkingBudgetDefault = "Par défaut"
 customService = "Personnalisé"
 extraBody = "Corps de requête supplémentaire"
-
 
 [settings.llmModal.thinkingBudgetOptions]
 off = "Désactivé"
@@ -496,100 +485,6 @@ textExplanation = "Explication du Texte"
 examples = "Exemples"
 translation = "Traduction"
 reasoning = "Raisonnement"
-
-[prompts.defaultNames]
-translate = "Traduire"
-batchTranslate = "Traduction par lot"
-inputTranslate = "Traduction d'entrée"
-explain = "Expliquer"
-dictionaryTranslate = "Traduction du dictionnaire"
-
-# Prompt Studio
-
-[promptStudio]
-title = "Studio d'invites"
-selectPrompt = "Sélectionnez d'abord une invite."
-selectLLM = "Sélectionnez LLM."
-modelMissing = "Modèle manquant."
-templates = "Modèles"
-preview = "Aperçu"
-runPreview = "Exécuter l'aperçu"
-addStep = "Ajouter une étape"
-deleteStep = "Supprimer l'étape"
-reset = "Réinitialiser"
-promptName = "Nom de l'invite"
-systemPrompt = "Invite système"
-contextVariables = "Variables de contexte"
-pageTitle = "Titre de la page"
-pageUrl = "URL de la page"
-surroundingBefore = "Avant"
-surroundingAfter = "Après"
-customVariables = "Variables personnalisées"
-resolvedMapping = "Mappage résolu"
-empty = "Vide"
-in = "Entrée"
-out = "Sortie"
-reasoning = "Raisonnement"
-trace = "Trace"
-systemPromptLabel = "Invite système"
-result = "Résultat"
-step = "Étape $1"
-tracePlaceholder = "Aucune trace d'exécution disponible pour le moment. Lancez un aperçu pour voir les détails d'exécution étape par étape."
-previewPlaceholder = "Pas de sortie pour l'instant. Lancez l'aperçu pour voir les résultats."
-insertVariable = "Insérer une variable"
-stepOutput = "Résultat de l'étape"
-status = "Statut"
-idle = "Inactif"
-running = "En cours d'exécution"
-completed = "Complété"
-error = "Erreur"
-
-[promptStudio.placeholders]
-sampleText = "Traduire le texte surligné."
-sampleTextLabel = "Exemple de texte"
-pageTitle = "Annonce de produit"
-pageUrl = "https://example.com/products/spark"
-surrBefore = "Visible immédiatement."
-surrAfter = "Pas besoin de traduire l'appel à l'action."
-selectModel = "Sélectionner LLM"
-enterURL = "https://example.com"
-keyPlaceholder = "Clé"
-valuePlaceholder = "Valeur"
-
-[promptStudio.templateSnippets]
-variables = "Variables"
-conditionals = "Conditions"
-loops = "Boucles"
-loopsWithoutKey = "Boucles sans clé"
-internalFunctions = "Fonctions internes"
-
-[promptStudio.contextLabels]
-text = "Texte"
-src = "Langue"
-dst = "Langue cible"
-title = "Titre"
-
-[promptStudio.outputModal]
-title = "Configurer le résultat de l'étape"
-typeLabel = "Type de résultat"
-string = "Chaîne de caractères"
-stringArray = "Tableau de chaînes"
-structured = "JSON structuré"
-stringDescription = "Traite la réponse comme une seule chaîne de caractères."
-stringArrayDescription = "Divise la réponse en un tableau en utilisant le délimiteur."
-delimiterLabel = "Délimiteur"
-delimiterPlaceholder = "p. ex. ligne vide"
-regexToggle = "Utiliser un délimiteur regex"
-regexPattern = "Modèle regex"
-regexFlags = "Drapeaux"
-structuredDescription = "Attendre un JSON valide du modèle."
-schemaLabel = "Schéma JSON"
-schemaPlaceholder = "{ \"type\": \"object\" }"
-invalidSchema = "Le schéma doit être un JSON valide."
-invalidRegex = "Le modèle regex est requis."
-
-# Error Messages
-
 [errors]
 modelNotFound = "Modèle avec l'ID '$1' introuvable dans les paramètres"
 missingApiSpec = "Le modèle '$1' n'a pas de spécification API"

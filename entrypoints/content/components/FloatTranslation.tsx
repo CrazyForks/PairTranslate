@@ -28,7 +28,6 @@ import { createDictionary } from "~/hooks/dictionary";
 import { useSettings } from "~/hooks/settings";
 import { createTranslation } from "~/hooks/translation";
 import { cn } from "~/utils/cn";
-import { PROMPT_ID } from "~/utils/constants";
 import { t } from "~/utils/i18n";
 import { autoParseJson, jsonAutocomplete } from "~/utils/json-autocomplete";
 import { getPageContext } from "~/utils/page-context";
@@ -71,7 +70,7 @@ export default (props: Props) => {
 const Explain = (props: { textContext: TextContext }) => {
 	const { settings } = useSettings();
 	const [data, retry] = createTranslation(() => props.textContext.text, {
-		promptId: PROMPT_ID.explain,
+		promptId: "explain",
 		modelId: () => settings.translate.floatingExplainModel,
 		srcLang: () => settings.translate.sourceLang,
 		dstLang: () => settings.translate.targetLang,
@@ -204,7 +203,7 @@ const Explain = (props: { textContext: TextContext }) => {
 const Translate = (props: { textContext: TextContext }) => {
 	const { settings } = useSettings();
 	const [data, retry] = createTranslation(() => props.textContext.text, {
-		promptId: PROMPT_ID.translate,
+		promptId: "translate",
 		modelId: () => settings.translate.floatingTranslateModel,
 		srcLang: () => settings.translate.sourceLang,
 		dstLang: () => settings.translate.targetLang,

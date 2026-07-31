@@ -135,52 +135,12 @@ export type WebsiteRuleSettings = z.infer<typeof WebsiteRuleSettings>;
 export const WebsiteRulesSettings = z.array(WebsiteRuleSettings);
 export type WebsiteRulesSettings = z.infer<typeof WebsiteRulesSettings>;
 
-const PromptStep = z.object({
-	message: z.string(),
-	output: z
-		.union([
-			z.literal("string"),
-			z.object({
-				type: z.literal("stringArray"),
-				delimiter: z.union([
-					z.string(),
-					z.object({
-						type: z.literal("regex"),
-						pattern: z.string(),
-						flags: z
-							.string()
-							.regex(/^[dgimsuvy]*$/, {
-								message: "Invalid regex flags. Allowed flags: d g i m s u v y.",
-							})
-							.optional(),
-					}),
-				]),
-			}),
-			z.object({
-				type: z.literal("structured"),
-				schema: z.any(),
-			}),
-		])
-		.default("string"),
-});
-export const PromptSettings = z.object({
-	name: z.string().min(1),
-	systemPrompt: z.string().default(""),
-	input: z.enum(["string", "stringArray"]).default("string"),
-	output: z.enum(["string", "structured"]).default("string"),
-	steps: z.array(PromptStep),
-});
-export type PromptSettings = z.infer<typeof PromptSettings>;
-export const PromptsSettings = z.record(z.uuid(), PromptSettings);
-export type PromptsSettings = z.infer<typeof PromptsSettings>;
-
 export const SettingsSchema = z.object({
 	__v: z.number().default(SETTINGS_VERSION),
 	basic: BasicSettings,
 	translate: TranslateSettings,
 	services: ServicesSettings,
 	queue: QueueControlSettings,
-	prompts: PromptsSettings,
 	websiteRules: WebsiteRulesSettings,
 	debug: DebugSettings,
 });

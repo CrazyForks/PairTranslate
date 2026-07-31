@@ -10,7 +10,7 @@ export const computeCacheKey = async (
 	dstLang?: string,
 ) => {
 	const D = "\u200C"; // Zero-width non-joiner to separate fields
-	let str = `${promptId}${modelId}${D}${Array.isArray(text) ? text.join(D) : text}${D}`;
+	let str = `${promptId}${D}${modelId}${D}${Array.isArray(text) ? text.join(D) : text}${D}`;
 	if (ctx.surr) {
 		if (ctx.surr.before) str += `${ctx.surr.before}${D}`;
 		if (ctx.surr.after) str += `${ctx.surr.after}${D}`;

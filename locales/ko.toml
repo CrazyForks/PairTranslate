@@ -9,7 +9,6 @@ basic = "기본 설정"
 translation = "번역 서비스"
 flowControl = "플로우 제어"
 llmServices = "LLM 서비스"
-promptSettings = "프롬프트 설정"
 traditionalServices = "전통 번역"
 websiteRules = "웹사이트 규칙"
 advanced = "고급 설정"
@@ -228,14 +227,6 @@ inTextTranslateIcon = "본문 내 번역 아이콘 표시"
 inTextTranslateIconDesc = "번역된 각 문단 앞에 번역 아이콘 표시"
 selectionTranslateEnabled = "$1 + 마우스 클릭/드래그로 번역"
 selectionTranslateHintSuffix = "+ 마우스 클릭/드래그로 번역"
-
-[settings.prompt]
-title = "프롬프트 설정"
-openManager = "프롬프트 관리자 열기"
-pageTitle = "프롬프트 관리자"
-placeholderDescription = "프롬프트 사용자화 기능이 곧 제공됩니다. 나중에 이 페이지에서 프롬프트를 편집하고 정리할 수 있습니다."
-backToSettings = "설정으로 돌아가기"
-
 [settings.flowControl]
 title = "플로우 제어"
 description = "번역 큐 전체의 처리량과 캐시 한도를 조정합니다."
@@ -272,7 +263,6 @@ temperature = "온도"
 thinkingBudget = "추론 예산"
 extraBody = "추가 요청 본문"
 
-
 [settings.llmModal]
 addTitle = "LLM 서비스 추가"
 editTitle = "LLM 서비스 편집"
@@ -292,7 +282,6 @@ thinkingBudget = "추론 예산"
 thinkingBudgetDefault = "기본값"
 customService = "사용자 정의"
 extraBody = "추가 요청 본문"
-
 
 [settings.llmModal.thinkingBudgetOptions]
 off = "끔"
@@ -496,100 +485,6 @@ textExplanation = "본문 설명"
 examples = "예시"
 translation = "번역"
 reasoning = "추론"
-
-[prompts.defaultNames]
-translate = "번역"
-batchTranslate = "배치 번역"
-inputTranslate = "입력 번역"
-explain = "설명"
-dictionaryTranslate = "사전 번역"
-
-# Prompt Studio
-
-[promptStudio]
-title = "프롬프트 스튜디오"
-selectPrompt = "먼저 프롬프트를 선택하세요."
-selectLLM = "LLM을 선택하세요."
-modelMissing = "모델이 누락되었습니다."
-templates = "템플릿"
-preview = "미리보기"
-runPreview = "미리보기 실행"
-addStep = "단계 추가"
-deleteStep = "단계 삭제"
-reset = "재설정"
-promptName = "프롬프트 이름"
-systemPrompt = "시스템 프롬프트"
-contextVariables = "컨텍스트 및 변수"
-pageTitle = "페이지 제목"
-pageUrl = "페이지 URL"
-surroundingBefore = "이전 내용"
-surroundingAfter = "다음 내용"
-customVariables = "사용자 정의 변수"
-resolvedMapping = "해결된 매핑"
-empty = "비어있음"
-in = "입력"
-out = "출력"
-reasoning = "추론"
-trace = "추적"
-systemPromptLabel = "시스템 프롬프트"
-result = "결과"
-step = "단계 $1"
-tracePlaceholder = "아직 실행 추적이 없습니다. 미리보기를 실행하여 단계별 실행 세부 정보를 확인하세요."
-previewPlaceholder = "아직 출력이 없습니다. 미리보기를 실행하여 결과를 확인하세요."
-insertVariable = "변수 삽입"
-stepOutput = "단계 출력"
-status = "상태"
-idle = "유휴"
-running = "실행 중"
-completed = "완료"
-error = "오류"
-
-[promptStudio.placeholders]
-sampleText = "강조된 텍스트를 번역하세요."
-sampleTextLabel = "샘플 텍스트"
-pageTitle = "제품 공지"
-pageUrl = "https://example.com/products/spark"
-surrBefore = "즉시 표시됨."
-surrAfter = "클릭 유도문안 번역 불필요."
-selectModel = "LLM 선택"
-enterURL = "https://example.com"
-keyPlaceholder = "키"
-valuePlaceholder = "값"
-
-[promptStudio.templateSnippets]
-variables = "변수"
-conditionals = "조건문"
-loops = "루프"
-loopsWithoutKey = "키 없는 루프"
-internalFunctions = "내부 함수"
-
-[promptStudio.contextLabels]
-text = "텍스트"
-src = "원본 언어"
-dst = "대상 언어"
-title = "제목"
-
-# Error Messages
-
-[promptStudio.outputModal]
-title = "단계 출력 구성"
-typeLabel = "출력 유형"
-string = "문자열"
-stringArray = "문자열 배열"
-structured = "구조화된 JSON"
-stringDescription = "응답을 단일 문자열로 처리합니다."
-stringArrayDescription = "구분 기호를 사용하여 응답을 배열로 분할합니다."
-delimiterLabel = "구분 기호"
-delimiterPlaceholder = "예: 빈 줄"
-regexToggle = "정규식 구분 기호 사용"
-regexPattern = "정규식 패턴"
-regexFlags = "플래그"
-structuredDescription = "모델에서 유효한 JSON을 기대합니다."
-schemaLabel = "JSON 스키마"
-schemaPlaceholder = "{ \"type\": \"object\" }"
-invalidSchema = "스키마는 유효한 JSON이어야 합니다."
-invalidRegex = "정규식 패턴이 필요합니다."
-
 [errors]
 modelNotFound = "설정에서 ID '$1' 모델을 찾을 수 없습니다"
 missingApiSpec = "모델 '$1'에 API 사양이 누락되었습니다"

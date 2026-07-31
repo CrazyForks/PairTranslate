@@ -31,7 +31,6 @@ export default defineBackground(() => {
 
 			unary: translateService.unary,
 			stream: translateService.stream,
-			batch: translateService.batch,
 			clearCache: translateService.clearCache,
 			queueStatus: translateService.queueStatus,
 

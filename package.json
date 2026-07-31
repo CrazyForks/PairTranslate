@@ -29,7 +29,6 @@
 		"katex": "^0.16.47",
 		"lucide-solid": "^1.28.0",
 		"mathml-to-latex": "^1.8.0",
-		"monaco-editor-core": "^0.55.1",
 		"motion": "^12.43.0",
 		"openai": "^6.49.0",
 		"reflect-metadata": "^0.2.2",

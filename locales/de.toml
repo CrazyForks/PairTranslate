@@ -9,7 +9,6 @@ basic = "Grundeinstellungen"
 translation = "Übersetzungsdienste"
 flowControl = "Durchsatzsteuerung"
 llmServices = "LLM-Dienste"
-promptSettings = "Eingabeaufforderungseinstellungen"
 traditionalServices = "Traditionelle Übersetzung"
 websiteRules = "Website-Regeln"
 advanced = "Erweiterte Einstellungen"
@@ -228,14 +227,6 @@ inTextTranslateIcon = "Übersetzungssymbol im Text anzeigen"
 inTextTranslateIconDesc = "Das Übersetzungssymbol vor jedem übersetzten Absatz anzeigen"
 selectionTranslateEnabled = "$1 + Mausklick/Ziehen zum Übersetzen"
 selectionTranslateHintSuffix = "+ Mausklick/Ziehen zum Übersetzen"
-
-[settings.prompt]
-title = "Eingabeaufforderungseinstellungen"
-openManager = "Eingabeaufforderungs-Manager öffnen"
-pageTitle = "Eingabeaufforderungs-Manager"
-placeholderDescription = "Eingabeaufforderungen-Anpassung kommt bald. Sie können Eingabeaufforderungen in einem zukünftigen Update von dieser Seite aus bearbeiten und organisieren."
-backToSettings = "Zurück zu Einstellungen"
-
 [settings.flowControl]
 title = "Durchsatzsteuerung"
 description = "Passen Sie den globalen Warteschlangen-Durchsatz, Durchsatzgrenzen und das Caching für jedes Übersetzungsmodell an."
@@ -272,7 +263,6 @@ temperature = "Temperatur"
 thinkingBudget = "Denkbudget"
 extraBody = "Zusätzlicher Body"
 
-
 [settings.llmModal]
 addTitle = "LLM-Dienst hinzufügen"
 editTitle = "LLM-Dienst bearbeiten"
@@ -292,7 +282,6 @@ thinkingBudget = "Denkbudget"
 thinkingBudgetDefault = "Standard"
 customService = "Benutzerdefiniert"
 extraBody = "Zusätzlicher Body"
-
 
 [settings.llmModal.thinkingBudgetOptions]
 off = "Aus"
@@ -496,100 +485,6 @@ textExplanation = "Texterklärung"
 examples = "Beispiele"
 translation = "Übersetzung"
 reasoning = "Begründung"
-
-[prompts.defaultNames]
-translate = "Übersetzen"
-batchTranslate = "Batch-Übersetzung"
-inputTranslate = "Eingabe-Übersetzung"
-explain = "Erklären"
-dictionaryTranslate = "Wörterbuch-Übersetzung"
-
-# Prompt Studio
-
-[promptStudio]
-title = "Prompt-Studio"
-selectPrompt = "Wählen Sie zuerst einen Prompt aus."
-selectLLM = "Wählen Sie LLM."
-modelMissing = "Modell fehlt."
-templates = "Vorlagen"
-preview = "Vorschau"
-runPreview = "Vorschau ausführen"
-addStep = "Schritt hinzufügen"
-deleteStep = "Schritt löschen"
-reset = "Zurücksetzen"
-promptName = "Prompt-Name"
-systemPrompt = "System-Prompt"
-contextVariables = "Kontext und Variablen"
-pageTitle = "Seitentitel"
-pageUrl = "Seiten-URL"
-surroundingBefore = "Davor"
-surroundingAfter = "Danach"
-customVariables = "Benutzerdefinierte Variablen"
-resolvedMapping = "Aufgelöste Zuordnung"
-empty = "Leer"
-in = "Eingabe"
-out = "Ausgabe"
-reasoning = "Begründung"
-trace = "Verfolgung"
-systemPromptLabel = "System-Prompt"
-result = "Ergebnis"
-step = "Schritt $1"
-tracePlaceholder = "Noch keine Ausführungsverfolgung verfügbar. Führen Sie die Vorschau aus, um Schritt-für-Schritt-Ausführungsdetails anzuzeigen."
-previewPlaceholder = "Noch keine Ausgabe. Führen Sie die Vorschau aus, um die Ergebnisse anzuzeigen."
-insertVariable = "Variable einfügen"
-stepOutput = "Schrittausgabe"
-status = "Status"
-idle = "Untätig"
-running = "Läuft"
-completed = "Abgeschlossen"
-error = "Fehler"
-
-[promptStudio.placeholders]
-sampleText = "Übersetzen Sie den markierten Text."
-sampleTextLabel = "Beispieltext"
-pageTitle = "Produktankündigung"
-pageUrl = "https://example.com/products/spark"
-surrBefore = "Sofort sichtbar."
-surrAfter = "CTA-Übersetzung nicht erforderlich."
-selectModel = "LLM auswählen"
-enterURL = "https://example.com"
-keyPlaceholder = "Schlüssel"
-valuePlaceholder = "Wert"
-
-[promptStudio.templateSnippets]
-variables = "Variablen"
-conditionals = "Bedingungen"
-loops = "Schleifen"
-loopsWithoutKey = "Schleifen ohne Schlüssel"
-internalFunctions = "Interne Funktionen"
-
-[promptStudio.contextLabels]
-text = "Text"
-src = "Sprache"
-dst = "Zielsprache"
-title = "Titel"
-
-[promptStudio.outputModal]
-title = "Schrittausgabe konfigurieren"
-typeLabel = "Ausgabetyp"
-string = "Zeichenkette"
-stringArray = "Zeichenketten-Array"
-structured = "Strukturiertes JSON"
-stringDescription = "Behandelt die Antwort als eine einzelne Zeichenkette."
-stringArrayDescription = "Teilt die Antwort in ein Array mithilfe des Trennzeichens."
-delimiterLabel = "Trennzeichen"
-delimiterPlaceholder = "z. B. leere Zeile"
-regexToggle = "Regex-Trennzeichen verwenden"
-regexPattern = "Regex-Muster"
-regexFlags = "Flags"
-structuredDescription = "Erwarten Sie gültiges JSON vom Modell."
-schemaLabel = "JSON-Schema"
-schemaPlaceholder = "{ \"type\": \"object\" }"
-invalidSchema = "Schema muss gültiges JSON sein."
-invalidRegex = "Regex-Muster ist erforderlich."
-
-# Error Messages
-
 [errors]
 modelNotFound = "Modell mit ID '$1' nicht in Einstellungen gefunden"
 missingApiSpec = "Modell '$1' hat keine API-Spezifikation"

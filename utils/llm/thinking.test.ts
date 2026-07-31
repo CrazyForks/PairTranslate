@@ -54,7 +54,6 @@ test("settings schema accepts missing and configured thinkingBudget", () => {
 			maxTokensPerBatch: 8000,
 			cacheSize: 1000,
 		},
-		prompts: {},
 		websiteRules: [],
 		debug: {
 			verboseLogging: false,

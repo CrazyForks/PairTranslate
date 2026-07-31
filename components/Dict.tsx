@@ -17,7 +17,6 @@ import {
 } from "solid-js";
 import { useSettings } from "~/hooks/settings";
 import { createTranslation } from "~/hooks/translation";
-import { PROMPT_ID } from "~/utils/constants";
 import type { DictionaryEntry } from "~/utils/dictionary";
 import { t } from "~/utils/i18n";
 import { getIframeClient } from "~/utils/rpc/iframe-def";
@@ -96,7 +95,7 @@ export default (props: DictionaryEntry) => {
 			ctx: () => ({
 				word: props.word,
 			}),
-			promptId: PROMPT_ID.dictionaryTranslate,
+			promptId: "dictionaryTranslate",
 			modelId: () =>
 				settings.translate.floatingTranslateModel ??
 				settings.translate.inTextTranslateModel,

@@ -9,15 +9,8 @@ import {
 	Info,
 	Languages,
 	Menu as MenuIcon,
-	MessageSquare,
 } from "lucide-solid";
-import {
-	createEffect,
-	createMemo,
-	createSignal,
-	type JSX,
-	lazy,
-} from "solid-js";
+import { createEffect, createMemo, createSignal, type JSX } from "solid-js";
 import { SettingsRecoveryBanner } from "~/components/SettingsRecoveryBanner";
 import { SettingsProvider, useSettings } from "~/hooks/settings";
 import { t } from "~/utils/i18n";
@@ -29,12 +22,9 @@ import Basic from "./pages/Basic";
 import Debug from "./pages/Debug";
 import FlowControl from "./pages/FlowControl";
 import LLM from "./pages/LLM";
-import PromptSettings from "./pages/PromptSettings";
 import Traditional from "./pages/Traditional";
 import Translation from "./pages/Translation";
 import WebsiteRules from "./pages/WebsiteRules";
-
-const PromptPage = lazy(() => import("./pages/Prompt"));
 
 const OptionsRoot = (props: { children?: JSX.Element }) => {
 	const { settings } = useSettings();
@@ -92,7 +82,6 @@ const SettingsPage = () => {
 					<Basic navId="basic" />
 					<Translation navId="translate" />
 					<LLM navId="llm" />
-					<PromptSettings navId="promptSettings" />
 					<Traditional navId="traditional" />
 					<FlowControl navId="flowControl" />
 					<WebsiteRules navId="websiteRules" />
@@ -118,10 +107,6 @@ const SettingsPage = () => {
 				<Nav.Item navId="llm">
 					<BrainCircuit size={16} />
 					{t("nav.llmServices")}
-				</Nav.Item>
-				<Nav.Item navId="promptSettings">
-					<MessageSquare size={16} />
-					{t("nav.promptSettings")}
 				</Nav.Item>
 				<Nav.Item navId="traditional">
 					<Globe size={16} />
@@ -160,8 +145,6 @@ export default () => {
 			<HashRouter root={OptionsRoot}>
 				<Route path="" component={() => <Navigate href="/settings" />} />
 				<Route path="/settings" component={SettingsPage} />
-				<Route path="/prompt" component={PromptPage} />
-				<Route path="/prompt/:promptId" component={PromptPage} />
 				<Route path="*" component={() => <Navigate href="/settings" />} />
 			</HashRouter>
 		</SettingsProvider>

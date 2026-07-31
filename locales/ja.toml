@@ -11,7 +11,6 @@ flowControl = "フロー制御"
 llmServices = "LLMサービス"
 traditionalServices = "従来の翻訳"
 websiteRules = "ウェブサイトルール"
-promptSettings = "プロンプト設定"
 advanced = "詳細設定"
 about = "について"
 debug = "デバッグ設定"
@@ -228,14 +227,6 @@ inTextTranslateIcon = "本文内の翻訳アイコンを表示"
 inTextTranslateIconDesc = "翻訳された各段落の前に翻訳アイコンを表示"
 selectionTranslateEnabled = "$1 + マウスクリック/ドラッグで翻訳"
 selectionTranslateHintSuffix = "+ マウスクリック/ドラッグで翻訳"
-
-[settings.prompt]
-title = "プロンプト設定"
-openManager = "プロンプトマネージャーを開く"
-pageTitle = "プロンプトマネージャー"
-placeholderDescription = "プロンプトのカスタマイズ機能は近日公開予定です。このページからプロンプトを編集・整理できるようになります。"
-backToSettings = "設定に戻る"
-
 [settings.flowControl]
 title = "フロー制御"
 description = "翻訳キュー全体のスループットやキャッシュポリシーを調整します。"
@@ -272,7 +263,6 @@ temperature = "温度"
 thinkingBudget = "推論予算"
 extraBody = "追加リクエストボディ"
 
-
 [settings.llmModal]
 addTitle = "LLMサービスを追加"
 editTitle = "LLMサービスを編集"
@@ -292,7 +282,6 @@ thinkingBudget = "推論予算"
 thinkingBudgetDefault = "デフォルト"
 customService = "カスタム"
 extraBody = "追加リクエストボディ"
-
 
 [settings.llmModal.thinkingBudgetOptions]
 off = "オフ"
@@ -496,100 +485,6 @@ textExplanation = "本文の説明"
 examples = "例文"
 translation = "翻訳"
 reasoning = "推論"
-
-[prompts.defaultNames]
-translate = "翻訳"
-batchTranslate = "バッチ翻訳"
-inputTranslate = "入力翻訳"
-explain = "説明"
-dictionaryTranslate = "辞書翻訳"
-
-# Prompt Studio
-
-[promptStudio]
-title = "プロンプトスタジオ"
-selectPrompt = "まずプロンプトを選択してください。"
-selectLLM = "LLM を選択してください。"
-modelMissing = "モデルが見つかりません。"
-templates = "テンプレート"
-preview = "プレビュー"
-runPreview = "プレビューを実行"
-addStep = "ステップを追加"
-deleteStep = "ステップを削除"
-reset = "リセット"
-promptName = "プロンプト名"
-systemPrompt = "システムプロンプト"
-contextVariables = "コンテキストと変数"
-pageTitle = "ページタイトル"
-pageUrl = "ページURL"
-surroundingBefore = "前のコンテキスト"
-surroundingAfter = "後のコンテキスト"
-customVariables = "カスタム変数"
-resolvedMapping = "解決されたマッピング"
-empty = "空"
-in = "入力"
-out = "出力"
-reasoning = "推論"
-trace = "トレース"
-systemPromptLabel = "システムプロンプト"
-result = "結果"
-step = "ステップ $1"
-tracePlaceholder = "実行トレースはまだ利用できません。プレビューを実行してステップバイステップの実行詳細を確認してください。"
-previewPlaceholder = "まだ出力がありません。プレビューを実行して結果を確認してください。"
-insertVariable = "変数を挿入"
-stepOutput = "ステップ出力"
-status = "ステータス"
-idle = "アイドル"
-running = "実行中"
-completed = "完了"
-error = "エラー"
-
-[promptStudio.placeholders]
-sampleText = "ハイライトされたテキストを翻訳してください。"
-sampleTextLabel = "サンプルテキスト"
-pageTitle = "商品発表"
-pageUrl = "https://example.com/products/spark"
-surrBefore = "すぐに表示されます。"
-surrAfter = "CTA 翻訳は不要です。"
-selectModel = "LLM を選択"
-enterURL = "https://example.com"
-keyPlaceholder = "キー"
-valuePlaceholder = "値"
-
-[promptStudio.templateSnippets]
-variables = "変数"
-conditionals = "条件"
-loops = "ループ"
-loopsWithoutKey = "キーなしループ"
-internalFunctions = "内部関数"
-
-[promptStudio.contextLabels]
-text = "テキスト"
-src = "ソース言語"
-dst = "ターゲット言語"
-title = "タイトル"
-
-# Error Messages
-
-[promptStudio.outputModal]
-title = "ステップ出力を構成"
-typeLabel = "出力タイプ"
-string = "文字列"
-stringArray = "文字列配列"
-structured = "構造化 JSON"
-stringDescription = "レスポンスを単一の文字列として扱います。"
-stringArrayDescription = "区切り文字を使用してレスポンスを配列に分割します。"
-delimiterLabel = "区切り文字"
-delimiterPlaceholder = "例：空行"
-regexToggle = "正規表現区切り文字を使用"
-regexPattern = "正規表現パターン"
-regexFlags = "フラグ"
-structuredDescription = "モデルから有効な JSON を期待します。"
-schemaLabel = "JSON スキーマ"
-schemaPlaceholder = "{ \"type\": \"object\" }"
-invalidSchema = "スキーマは有効な JSON である必要があります。"
-invalidRegex = "正規表現パターンが必要です。"
-
 [errors]
 modelNotFound = "設定にID '$1' のモデルが見つかりません"
 missingApiSpec = "モデル '$1' にAPI仕様がありません"

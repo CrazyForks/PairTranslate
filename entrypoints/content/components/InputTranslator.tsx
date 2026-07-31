@@ -6,7 +6,7 @@ import { ScrollableReasoning } from "~/components/Reasoning";
 import { Select } from "~/components/Select";
 import { useSettings } from "~/hooks/settings";
 import { createTranslation } from "~/hooks/translation";
-import { PROMPT_ID, SUPPORTED_LANGUAGES } from "~/utils/constants";
+import { SUPPORTED_LANGUAGES } from "~/utils/constants";
 import { copyToClipboard } from "~/utils/copy";
 import { t } from "~/utils/i18n";
 import { isApple } from "~/utils/isapple";
@@ -41,7 +41,7 @@ const TranslateElement = (props: {
 	};
 
 	const [data, retry] = createTranslation(getText, {
-		promptId: PROMPT_ID.inputTranslate,
+		promptId: "inputTranslate",
 		modelId: () => settings.translate.inputTranslateModel,
 		stream: true,
 		srcLang: () => settings.translate.sourceLang,

@@ -1,15 +1,7 @@
-import { MS_TRANSLATOR_ID, PROMPT_ID } from "~/utils/constants";
+import { MS_TRANSLATOR_ID } from "~/utils/constants";
 import { t } from "~/utils/i18n";
 import { getTargetLanguage } from "~/utils/language";
 import { getDefaultModifierKey } from "~/utils/modifier";
-import {
-	BATCH,
-	DICTIONARY,
-	EXPLAIN,
-	EXPLAIN_SCHEMA,
-	INPUT,
-	UNARY,
-} from "~/utils/prompt";
 import type * as s from "./def";
 import { SETTINGS_VERSION } from "./version";
 
@@ -109,81 +101,6 @@ export function generateDebugSettings(): s.DebugSettings {
 	};
 }
 
-export function generatePromptSettings(): s.PromptsSettings {
-	return {
-		[PROMPT_ID.translate]: {
-			name: t("prompts.defaultNames.translate"),
-			systemPrompt: UNARY().system,
-			input: "string",
-			output: "string",
-			steps: [
-				{
-					message: UNARY().user,
-					output: "string",
-				},
-			],
-		},
-		[PROMPT_ID.batchTranslate]: {
-			name: t("prompts.defaultNames.batchTranslate"),
-			systemPrompt: BATCH().system,
-			input: "stringArray",
-			output: "structured",
-			steps: [
-				{
-					message: BATCH().user,
-					output: {
-						type: "stringArray",
-						delimiter: {
-							type: "regex",
-							pattern: "^==== \\d+",
-							flags: "gm",
-						},
-					},
-				},
-			],
-		},
-		[PROMPT_ID.inputTranslate]: {
-			name: t("prompts.defaultNames.inputTranslate"),
-			systemPrompt: INPUT().system,
-			input: "string",
-			output: "string",
-			steps: [
-				{
-					message: INPUT().user,
-					output: "string",
-				},
-			],
-		},
-		[PROMPT_ID.dictionaryTranslate]: {
-			name: t("prompts.defaultNames.dictionaryTranslate"),
-			systemPrompt: DICTIONARY().system,
-			input: "string",
-			output: "string",
-			steps: [
-				{
-					message: DICTIONARY().user,
-					output: "string",
-				},
-			],
-		},
-		[PROMPT_ID.explain]: {
-			name: t("prompts.defaultNames.explain"),
-			systemPrompt: EXPLAIN().system,
-			input: "string",
-			output: "structured",
-			steps: [
-				{
-					message: EXPLAIN().user,
-					output: {
-						type: "structured",
-						schema: EXPLAIN_SCHEMA(),
-					},
-				},
-			],
-		},
-	};
-}
-
 /**
  * Generate complete default settings
  */
@@ -195,7 +112,6 @@ export function generateDefaultSettings(): s.SettingsSchema {
 		services: generateServicesSettings(),
 		websiteRules: generateWebsiteRuleSettings(),
 		queue: generateQueueControlSettings(),
-		prompts: generatePromptSettings(),
 		debug: generateDebugSettings(),
 	};
 }

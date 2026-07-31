@@ -9,7 +9,6 @@ basic = "Configurações Básicas"
 translation = "Serviços de Tradução"
 flowControl = "Controle de Fluxo"
 llmServices = "Serviços LLM"
-promptSettings = "Configurações de Prompt"
 traditionalServices = "Tradução Tradicional"
 websiteRules = "Regras de Site"
 advanced = "Configurações Avançadas"
@@ -228,14 +227,6 @@ inTextTranslateIcon = "Mostrar ícone de tradução no texto"
 inTextTranslateIconDesc = "Mostrar o ícone de tradução antes de cada parágrafo traduzido"
 selectionTranslateEnabled = "$1 + Clique/Arrasto do mouse para traduzir"
 selectionTranslateHintSuffix = "+ Clique/Arrasto do mouse para traduzir"
-
-[settings.prompt]
-title = "Configurações de Prompt"
-openManager = "Abrir Gerenciador de Prompt"
-pageTitle = "Gerenciador de Prompt"
-placeholderDescription = "A personalização de prompt está chegando em breve. Você poderá editar e organizar prompts a partir desta página em uma atualização futura."
-backToSettings = "Voltar para Configurações"
-
 [settings.flowControl]
 title = "Controle de Fluxo"
 description = "Ajuste a taxa de transferência global da fila, limites de taxa e cache para cada modelo de tradução."
@@ -272,7 +263,6 @@ temperature = "Temperatura"
 thinkingBudget = "Orçamento de raciocínio"
 extraBody = "Corpo da solicitação extra"
 
-
 [settings.llmModal]
 addTitle = "Adicionar Serviço LLM"
 editTitle = "Editar Serviço LLM"
@@ -292,7 +282,6 @@ thinkingBudget = "Orçamento de raciocínio"
 thinkingBudgetDefault = "Padrão"
 customService = "Personalizado"
 extraBody = "Corpo da solicitação extra"
-
 
 [settings.llmModal.thinkingBudgetOptions]
 off = "Desativado"
@@ -496,100 +485,6 @@ textExplanation = "Explicação do Texto"
 examples = "Exemplos"
 translation = "Tradução"
 reasoning = "Raciocínio"
-
-[prompts.defaultNames]
-translate = "Traduzir"
-batchTranslate = "Tradução em lote"
-inputTranslate = "Tradução de entrada"
-explain = "Explicar"
-dictionaryTranslate = "Tradução do dicionário"
-
-# Prompt Studio
-
-[promptStudio]
-title = "Estúdio de Prompts"
-selectPrompt = "Selecione um prompt primeiro."
-selectLLM = "Selecione LLM."
-modelMissing = "Modelo ausente."
-templates = "Modelos"
-preview = "Visualizar"
-runPreview = "Executar visualização"
-addStep = "Adicionar etapa"
-deleteStep = "Excluir etapa"
-reset = "Redefinir"
-promptName = "Nome do prompt"
-systemPrompt = "Prompt do sistema"
-contextVariables = "Variáveis de contexto"
-pageTitle = "Título da página"
-pageUrl = "URL da página"
-surroundingBefore = "Antes"
-surroundingAfter = "Depois"
-customVariables = "Variáveis personalizadas"
-resolvedMapping = "Mapeamento resolvido"
-empty = "Vazio"
-in = "Entrada"
-out = "Saída"
-reasoning = "Raciocínio"
-trace = "Rastreamento"
-systemPromptLabel = "Solicitação do sistema"
-result = "Resultado"
-step = "Etapa $1"
-tracePlaceholder = "Sem rastreamento de execução disponível ainda. Execute a visualização para ver os detalhes de execução passo a passo."
-previewPlaceholder = "Sem saída ainda. Execute a visualização para ver os resultados."
-insertVariable = "Inserir variável"
-stepOutput = "Saída da etapa"
-status = "Status"
-idle = "Inativo"
-running = "Em execução"
-completed = "Concluído"
-error = "Erro"
-
-[promptStudio.placeholders]
-sampleText = "Traduzir o texto realçado."
-sampleTextLabel = "Texto de amostra"
-pageTitle = "Anúncio de produto"
-pageUrl = "https://example.com/products/spark"
-surrBefore = "Visível imediatamente."
-surrAfter = "Tradução de chamada para ação não necessária."
-selectModel = "Selecionar LLM"
-enterURL = "https://example.com"
-keyPlaceholder = "Chave"
-valuePlaceholder = "Valor"
-
-[promptStudio.templateSnippets]
-variables = "Variáveis"
-conditionals = "Condicionais"
-loops = "Loops"
-loopsWithoutKey = "Loops sem chave"
-internalFunctions = "Funções internas"
-
-[promptStudio.contextLabels]
-text = "Texto"
-src = "Idioma de origem"
-dst = "Idioma de destino"
-title = "Título"
-
-# Error Messages
-
-[promptStudio.outputModal]
-title = "Configurar saída da etapa"
-typeLabel = "Tipo de saída"
-string = "Texto"
-stringArray = "Matriz de textos"
-structured = "JSON estruturado"
-stringDescription = "Trata a resposta como uma única cadeia de texto."
-stringArrayDescription = "Divide a resposta em uma matriz usando o delimitador."
-delimiterLabel = "Delimitador"
-delimiterPlaceholder = "p. ex. linha em branco"
-regexToggle = "Usar delimitador regex"
-regexPattern = "Padrão regex"
-regexFlags = "Sinalizadores"
-structuredDescription = "Espera JSON válido do modelo."
-schemaLabel = "Esquema JSON"
-schemaPlaceholder = "{ \"type\": \"object\" }"
-invalidSchema = "O esquema deve ser um JSON válido."
-invalidRegex = "Padrão regex é obrigatório."
-
 [errors]
 modelNotFound = "Modelo com ID '$1' não encontrado nas configurações"
 missingApiSpec = "Modelo '$1' não tem especificação de API"

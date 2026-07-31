@@ -13,7 +13,7 @@ import { TranslateNodePortal } from "~/components/MPortal";
 import { useSettings } from "~/hooks/settings";
 import { createBatchTranslation } from "~/hooks/translation";
 import { useWebsiteRule } from "~/hooks/website-rule";
-import { DATA_TRANSLATION_TEXT, PROMPT_ID } from "~/utils/constants";
+import { DATA_TRANSLATION_TEXT } from "~/utils/constants";
 import { copyToClipboard } from "~/utils/copy";
 import { getMarkdownFromSection } from "~/utils/markdown";
 import { getPageContext } from "~/utils/page-context";
@@ -145,7 +145,7 @@ const BatchRender = (props: BatchRenderProps) => {
 	const websiteRule = useWebsiteRule();
 	const texts = createMemo(() => props.sections.map(([, text]) => text));
 	const [getter, retry] = createBatchTranslation(texts, {
-		promptId: PROMPT_ID.batchTranslate,
+		promptId: "batchTranslate",
 		modelId: () => settings.translate.inTextTranslateModel,
 		srcLang: () => websiteRule.sourceLang || settings.translate.sourceLang,
 		dstLang: () => websiteRule.targetLang || settings.translate.targetLang,

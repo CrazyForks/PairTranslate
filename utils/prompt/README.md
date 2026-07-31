@@ -1,28 +1,58 @@
-## Operators
+# Prompts
 
-- `{{#if CONDITION}}...{{/if}}`: Conditional based on the truthiness of `CONDITION`.
-- `{{#else}}...{{/else}}`: Else block for the preceding `if`.
-- `{{#elif CONDITION}}...{{/elif}}`: Else-if block for the preceding `if`.
-- `{{#for ITEM:COLLECTION}}...{{/for}}`: Loop over each `ITEM` in `COLLECTION`.
-- `{{#for KEY, ITEM: COLLECTION}}...{{/for}}`: Loop with access to both `KEY` (index/property name) and `ITEM`.
-- `{{variable}}`: Access the value of `variable`.
-- `{{variable[N]}}`: Access the N-th element of `variable` if it's an array (0-based).
-- `{{variable.key}}`: Access the property `key` of `variable`.
+Prompts are static TypeScript, not user configuration. Each one is a pure
+function of a typed context to a string, so prompt text is type-checked and
+unit-testable, and there is no template language to parse at runtime.
 
-## Internal Functions
+## Layout
 
-- `{{@toJSON value}}`: Stringify `value` into compact JSON.
-- `{{@toJSONPretty value}}`: Stringify `value` into pretty-printed JSON.
+| Path | Role |
+| --- | --- |
+| `id.ts` | `PromptId` union and `PromptOutputMap`. A leaf module, so consumers can import prompt *types* without pulling prompt *text* into their bundle. |
+| `text.ts` | String helpers: `join`, `lines`, `section`, `numbered`, `kv`, `when`, `selfClosingTag`. |
+| `dsl.ts` | `definePrompt`, the `PromptDef`/`AnyPromptDef` types, `normalizeInput`, `buildPromptContext`. |
+| `explain-schema.ts` | The zod schema and JSON Schema for `explain`'s structured output. |
+| `defs/*.ts` | One module per prompt, plus `shared.ts` for the pieces they have in common. |
+| `../prompt.ts` | The `PROMPTS` registry and the public surface. |
 
-## Variables
-- `page`: An object containing key-value pairs for page-level context. Note: this is not predefined in implementation, but frontend will add that to context when available.
-- `text`: Input text(s) to be processed. Can be a single string or an array of strings.
-- `output[N]`: The output of step N, where N is the step index (0-based). can be accessed in subsequent steps.
-- `lang.src`: Source language code (can be `auto`).
-- `lang.dst`: Target language code.
+## Writing a prompt
 
-## Escape Sequences
+```ts
+export type MyCtx = { text: string; lang: PromptLang; page?: PageContext };
 
-- `\{{`: Escape sequence for literal `{{`.
-- `\}}`: Escape sequence for literal `}}`.
- 
+export const myPrompt = definePrompt<MyCtx>({
+  id: "myPrompt",
+  input: "string",
+  system: (ctx) => join(
+    translatorPreamble(ctx.lang.dst),
+    section("instructions", numbered(
+      "Always do this.",
+      when(ctx.page, "Only mentioned when page context exists."),
+    )),
+    pageSection(ctx.page),
+  ),
+  user: (ctx) => ctx.text,
+  parse: (raw) => raw,
+});
+```
+
+Then add the id to `PromptId`, its output type to `PromptOutputMap`, and the
+definition to `PROMPTS`. The registry's mapped type will not compile until all
+three line up.
+
+## Conventions worth knowing
+
+- **Helpers drop empty parts.** `join`/`lines`/`numbered` filter out `undefined`,
+  `null`, `false` and `""`, and `section`/`kv` return `undefined` when they would
+  be empty. That is what lets `when(...)` be used inline without leaving blank
+  lines or empty tags behind.
+- **`numbered` renumbers after filtering.** A conditional list item never leaves
+  a gap in the sequence, which is what the old templates got wrong by hardcoding
+  ordinals inside `{{#if}}` branches.
+- **`input` is checked against the context.** Declaring `input: "string"` with a
+  `text: string[]` context is a compile error.
+- **`parse` runs on completed responses only.** Streaming yields raw text
+  chunks; callers that need structured data parse the accumulated string
+  themselves (see `jsonAutocomplete`).
+- **`ctx.lang` holds native names**, not language codes — `buildPromptContext`
+  maps them, and leaves `lang.src` undefined when auto-detecting.

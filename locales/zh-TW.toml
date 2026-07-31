@@ -9,7 +9,6 @@ basic = "基本設置"
 translation = "翻譯服務"
 flowControl = "流控設置"
 llmServices = "LLM 服務"
-promptSettings = "提示詞設置"
 traditionalServices = "傳統翻譯"
 websiteRules = "網站規則"
 advanced = "高級設置"
@@ -228,14 +227,6 @@ inTextTranslateIcon = "顯示翻譯圖示"
 inTextTranslateIconDesc = "在每個翻譯段落前顯示翻譯圖示"
 selectionTranslateEnabled = "$1 + 滑鼠點擊/拖動進行翻譯"
 selectionTranslateHintSuffix = "+ 滑鼠點擊/拖動進行翻譯"
-
-[settings.prompt]
-title = "提示詞設置"
-openManager = "打開提示詞管理器"
-pageTitle = "提示詞管理器"
-placeholderDescription = "提示詞自定義功能即將上線。稍後您可以在此頁面編輯和組織提示詞。"
-backToSettings = "返回設置"
-
 [settings.flowControl]
 title = "流控設置"
 description = "配置全局翻譯隊列的速率限制與緩存策略。"
@@ -272,7 +263,6 @@ temperature = "溫度"
 thinkingBudget = "思考強度"
 extraBody = "額外參數"
 
-
 [settings.llmModal]
 addTitle = "添加 LLM 服務"
 editTitle = "編輯 LLM 服務"
@@ -292,7 +282,6 @@ thinkingBudget = "思考強度"
 thinkingBudgetDefault = "預設"
 customService = "自定義"
 extraBody = "額外參數"
-
 
 [settings.llmModal.thinkingBudgetOptions]
 off = "關閉"
@@ -496,100 +485,6 @@ textExplanation = "文本說明"
 examples = "示例"
 translation = "翻譯"
 reasoning = "思考過程"
-
-[prompts.defaultNames]
-translate = "翻譯"
-batchTranslate = "批量翻譯"
-inputTranslate = "輸入框翻譯"
-explain = "解釋"
-dictionaryTranslate = "詞典釋義翻譯"
-
-# Prompt Studio
-
-[promptStudio]
-title = "提示詞工作室"
-selectPrompt = "請先選擇一個提示詞。"
-selectLLM = "請選擇 LLM。"
-modelMissing = "模型缺失。"
-templates = "範本"
-preview = "預覽"
-runPreview = "運行預覽"
-addStep = "添加步驟"
-deleteStep = "刪除步驟"
-reset = "重置"
-promptName = "提示詞名稱"
-systemPrompt = "系統提示詞"
-contextVariables = "上下文和變數"
-pageTitle = "頁面標題"
-pageUrl = "頁面網址"
-surroundingBefore = "前面內容"
-surroundingAfter = "後面內容"
-customVariables = "自訂變數"
-resolvedMapping = "解析的映射"
-empty = "空"
-in = "輸入"
-out = "輸出"
-reasoning = "思考過程"
-trace = "追蹤"
-systemPromptLabel = "系統提示詞"
-result = "結果"
-step = "步驟 $1"
-tracePlaceholder = "暫無執行追蹤。執行預覽以查看分步執行詳情。"
-previewPlaceholder = "暫無輸出。執行預覽以查看結果。"
-insertVariable = "插入變數"
-stepOutput = "步驟輸出"
-status = "狀態"
-idle = "空閒"
-running = "運行中"
-completed = "已完成"
-error = "錯誤"
-
-[promptStudio.placeholders]
-sampleText = "翻譯反白的內容。"
-sampleTextLabel = "樣本文字"
-pageTitle = "產品公告"
-pageUrl = "https://example.com/products/spark"
-surrBefore = "立即可見。"
-surrAfter = "行動號召無需翻譯。"
-selectModel = "選擇 LLM"
-enterURL = "https://example.com"
-keyPlaceholder = "鍵"
-valuePlaceholder = "值"
-
-[promptStudio.templateSnippets]
-variables = "變數"
-conditionals = "條件"
-loops = "迴圈"
-loopsWithoutKey = "不帶鍵的迴圈"
-internalFunctions = "內置函數"
-
-[promptStudio.contextLabels]
-text = "文本"
-src = "源語言"
-dst = "目標語言"
-title = "標題"
-
-# Error Messages
-
-[promptStudio.outputModal]
-title = "配置步驟輸出"
-typeLabel = "輸出類型"
-string = "字符串"
-stringArray = "字符串數組"
-structured = "結構化 JSON"
-stringDescription = "將響應視為單個字符串。"
-stringArrayDescription = "使用分隔符將響應拆分為數組。"
-delimiterLabel = "分隔符"
-delimiterPlaceholder = "例如：空行"
-regexToggle = "使用正則表達式分隔符"
-regexPattern = "正則表達式模式"
-regexFlags = "標誌"
-structuredDescription = "期望來自模型的有效 JSON。"
-schemaLabel = "JSON 架構"
-schemaPlaceholder = "{ \"type\": \"object\" }"
-invalidSchema = "架構必須是有效的 JSON。"
-invalidRegex = "需要正則表達式模式。"
-
 [errors]
 modelNotFound = "設置中未找到 ID 為 '$1' 的模型"
 missingApiSpec = "模型 '$1' 缺少 API 規範"
