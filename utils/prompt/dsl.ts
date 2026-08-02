@@ -2,34 +2,23 @@
 
 import { getNativeName } from "~/utils/constants";
 import type { JSONSchema } from "~/utils/llm";
-import type { PromptId } from "./id";
-
-export type PromptLang = {
-	/** Native name of the source language; undefined when auto-detecting. */
-	src?: string;
-	/** Native name of the target language. */
-	dst: string;
-};
-
-/** Every prompt context carries at least the input text and the language pair. */
-export type PromptCtxBase = {
-	text: string | string[];
-	lang: PromptLang;
-};
+import type { PromptCtxBase, PromptCtxMap } from "~/utils/prompt/ctx";
+import type { PromptId, PromptOutputMap } from "./id";
 
 export type PromptInputKind = "string" | "stringArray";
 
 /**
  * A prompt definition. `system` and `user` are pure functions of a typed
- * context; `parse` turns a completed response body into the prompt's output.
+ * context; `parse` turns a completed response body *and* the prompt context
+ * that produced it into the prompt's output.
  */
-export type PromptDef<Ctx extends PromptCtxBase, Out> = {
-	id: PromptId;
+export type PromptDef<Id extends PromptId, Ctx extends PromptCtxBase> = {
+	id: Id;
 	/** Derived from `Ctx["text"]` — a mismatch is a compile error. */
 	input: Ctx["text"] extends string[] ? "stringArray" : "string";
 	system: (ctx: Ctx) => string;
 	user: (ctx: Ctx) => string;
-	parse: (raw: string) => Out;
+	parse: (raw: string, ctx: Ctx) => PromptOutputMap[Id];
 	/** Present only for prompts that want provider structured-output mode. */
 	schema?: JSONSchema;
 };
@@ -40,17 +29,21 @@ export type PromptDef<Ctx extends PromptCtxBase, Out> = {
  * contract is given up, so it stays contained here.
  */
 export type AnyPromptDef<Out = unknown> = Omit<
-	PromptDef<PromptCtxBase, Out>,
-	"system" | "user" | "input"
+	PromptDef<PromptId, PromptCtxBase>,
+	"system" | "user" | "parse" | "input"
 > & {
 	input: PromptInputKind;
 	system: (ctx: any) => string;
 	user: (ctx: any) => string;
+	parse: (raw: string, ctx: any) => Out;
 };
 
-export const definePrompt = <Ctx extends PromptCtxBase, Out = string>(
-	def: PromptDef<Ctx, Out>,
-): PromptDef<Ctx, Out> => def;
+export const definePrompt = <
+	Id extends PromptId,
+	Ctx extends PromptCtxMap[Id] = PromptCtxMap[Id],
+>(
+	def: PromptDef<Id, Ctx>,
+): PromptDef<Id, Ctx> => def;
 
 /** Coerce a payload to the shape the prompt declares it accepts. */
 export const normalizeInput = (

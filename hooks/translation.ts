@@ -15,8 +15,8 @@ import {
 	TranslateErrorType,
 } from "~/utils/errors";
 import { t } from "~/utils/i18n";
+import type { PromptCtxExtra } from "~/utils/prompt/ctx";
 import type { PromptId, PromptOutput } from "~/utils/prompt/id";
-import type { TranslateContext } from "~/utils/types";
 import { mightUseProgressIndicator } from "./progress-indicator";
 
 type Pending = {
@@ -70,33 +70,35 @@ const noModelError = () =>
 		TranslateErrorType.MODEL_NOT_FOUND,
 		t("errors.translationModelRequired"),
 	);
-const batchMismatchError = (exp: number, got: number) =>
+const batchMissingEntryError = (index: number) =>
 	createTranslateError(
 		TranslateErrorType.VALIDATION_ERROR,
-		`Expected ${exp} translations, but got ${got}`,
+		`The model returned no translation for paragraph ${index}`,
 	);
 
 /** Batch translation needs a prompt whose parsed output is one entry per input. */
 type BatchPromptId = {
-	[Id in PromptId]: PromptOutput<Id> extends string[] ? Id : never;
+	[Id in PromptId]: PromptOutput<Id> extends (string | undefined)[]
+		? Id
+		: never;
 }[PromptId];
 
-export function createBatchTranslation(
+export function createBatchTranslation<Id extends BatchPromptId>(
 	text: () => string[],
 	options: {
-		promptId: BatchPromptId;
+		promptId: Id;
 		modelId: () => string | undefined;
 		srcLang: () => string | undefined;
 		dstLang: () => string;
 		thinCache?: boolean;
-		ctx?: () => Record<string, unknown>;
+		ctx?: () => PromptCtxExtra<Id>;
 	},
 ): BatchReturn {
 	const promptId = options.promptId;
 	const modelId = options.modelId;
 	const srcLang = options.srcLang;
 	const dstLang = options.dstLang;
-	const ctx = options.ctx || (() => ({}));
+	const ctx = options.ctx || (() => ({}) as PromptCtxExtra<Id>);
 	const thinCache = options.thinCache ?? true;
 	const progressCtx = mightUseProgressIndicator();
 
@@ -115,10 +117,23 @@ export function createBatchTranslation(
 			setTextResult({ to: len - 1 }, undefined);
 		});
 
-	const setResultTexts = (texts: string[]) =>
+	/**
+	 * Apply a sparse batch result. Each slot is keyed to its input index, so a
+	 * hole marks exactly the paragraph the model dropped and every other
+	 * translation stays paired with the right original.
+	 */
+	const setResultTexts = (texts: (string | undefined)[], expected: number) =>
 		batch(() => {
-			setError({ to: texts.length - 1 }, undefined);
-			setTextResult(texts);
+			for (let i = 0; i < expected; i++) {
+				const value = texts[i];
+				if (value) {
+					setError(i, undefined);
+					setTextResult(i, value);
+				} else {
+					setError(i, batchMissingEntryError(i));
+					setTextResult(i, undefined);
+				}
+			}
 		});
 	const clearAll = () =>
 		batch(() => {
@@ -152,22 +167,11 @@ export function createBatchTranslation(
 				abortController.signal,
 			)
 			.then((resp) => {
-				const normalized = normalizeUnaryResponse<string[]>(resp);
+				const normalized = normalizeUnaryResponse<(string | undefined)[]>(resp);
 				const translated = Array.isArray(normalized.output)
 					? normalized.output
 					: [normalized.output];
-				setResultTexts(translated);
-				translated.length < texts.length &&
-					batch(() => {
-						setError(
-							{ from: translated.length, to: texts.length - 1 },
-							batchMismatchError(texts.length, translated.length),
-						);
-						setTextResult(
-							{ from: translated.length, to: texts.length - 1 },
-							undefined,
-						);
-					});
+				setResultTexts(translated, texts.length);
 			})
 			.catch((e) => {
 				if (abortController.signal.aborted) return;
@@ -289,15 +293,15 @@ type SingleStreamReturn<T> = readonly [
  * Streaming accumulates raw text chunks, so the result is always a string —
  * parsing structured output is the caller's business.
  */
-export function createTranslation(
+export function createTranslation<Id extends PromptId>(
 	text: () => string,
 	options: {
 		stream: true;
-		promptId: PromptId;
+		promptId: Id;
 		modelId: () => string | undefined;
 		srcLang: () => string | undefined;
 		dstLang: () => string;
-		ctx?: () => TranslateContext;
+		ctx?: () => PromptCtxExtra<Id>;
 	},
 ): SingleStreamReturn<string>;
 /** A completed request resolves to whatever the prompt's `parse` produces. */
@@ -309,7 +313,7 @@ export function createTranslation<Id extends PromptId>(
 		srcLang: () => string | undefined;
 		dstLang: () => string;
 		promptId: Id;
-		ctx?: () => TranslateContext;
+		ctx?: () => PromptCtxExtra<Id>;
 	},
 ): SingleReturn<PromptOutput<Id>>;
 export function createTranslation<T>(
@@ -320,14 +324,14 @@ export function createTranslation<T>(
 		modelId: () => string | undefined;
 		srcLang: () => string | undefined;
 		dstLang: () => string;
-		ctx?: () => TranslateContext;
+		ctx?: () => Record<string, unknown>;
 	},
 ): SingleReturn<T> | SingleStreamReturn<T> {
 	const modelId = options.modelId;
 	const srcLang = options.srcLang;
 	const dstLang = options.dstLang;
 	const promptId = options.promptId;
-	const ctx = options.ctx || (() => ({}) as TranslateContext);
+	const ctx = options.ctx || (() => ({}));
 	const isStream = options.stream ?? false;
 	const progressCtx = mightUseProgressIndicator();
 

@@ -409,7 +409,7 @@ export const createTranslateService = async (): Promise<TranslateService> => {
 		const raw = response.content ?? "";
 		let output: unknown;
 		try {
-			output = def.parse(raw);
+			output = def.parse(raw, promptCtx);
 		} catch (error) {
 			throw createTranslateError(
 				TranslateErrorType.VALIDATION_ERROR,

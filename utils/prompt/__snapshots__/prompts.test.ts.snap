@@ -3,7 +3,7 @@
 exports[`rendered prompts translate minimal 1`] = `
 {
   "system": 
-"You are a professional translator. You will be given some text to translate, with some relevant background information. You need to translate the text into "日本語".
+"You are a professional translator. You will be given "English" text to translate. You need to translate the text into "日本語".
 
 <guidelines>
 1. From the perspective of the original author, consider what they want to express and accurately convey their meaning.
@@ -45,7 +45,7 @@ Why does the sky appear blue?
 exports[`rendered prompts translate full 1`] = `
 {
   "system": 
-"You are a professional translator. You will be given some text to translate, with some relevant background information. You need to translate the text into "日本語".
+"You are a professional translator. You will be given "English" text to translate. You need to translate the text into "日本語".
 
 <guidelines>
 1. From the perspective of the original author, consider what they want to express and accurately convey their meaning.
@@ -93,7 +93,7 @@ domain: example.com
 exports[`rendered prompts batchTranslate minimal 1`] = `
 {
   "system": 
-"You are a professional translator. You will be given some text to translate, with some relevant background information. You need to translate the text into "日本語".
+"You are a professional translator. You will be given "English" text to translate. You need to translate the text into "日本語".
 
 <guidelines>
 1. From the perspective of the original author, consider what they want to express and accurately convey their meaning.
@@ -116,14 +116,14 @@ To prove that $1 + 1 = 2$, we start with the definition of addition:
 
 Let $a$ and $b$ be two numbers. The sum $a + b$ is defined as the **total** quantity obtained by combining $a$ and $b$ ...
 
-## Output
+## Output (in 日本語)
 ==== 0
 
-为了证明 $1 + 1 = 2$，我们从加法的定义开始：
+[Translation of paragraph 0 in 日本語]
 
 ==== 1
 
-令 $a$ 和 $b$ 为两个数。和 $a + b$ 定义为将 $a$ 和 $b$ 结合后得到的**总**数量...
+[Translation of paragraph 1 in 日本語]
 
 </example>"
 ,
@@ -146,7 +146,7 @@ second"
 exports[`rendered prompts batchTranslate full 1`] = `
 {
   "system": 
-"You are a professional translator. You will be given some text to translate, with some relevant background information. You need to translate the text into "日本語".
+"You are a professional translator. You will be given "English" text to translate. You need to translate the text into "日本語".
 
 <guidelines>
 1. From the perspective of the original author, consider what they want to express and accurately convey their meaning.
@@ -170,14 +170,14 @@ To prove that $1 + 1 = 2$, we start with the definition of addition:
 
 Let $a$ and $b$ be two numbers. The sum $a + b$ is defined as the **total** quantity obtained by combining $a$ and $b$ ...
 
-## Output
+## Output (in 日本語)
 ==== 0
 
-为了证明 $1 + 1 = 2$，我们从加法的定义开始：
+[Translation of paragraph 0 in 日本語]
 
 ==== 1
 
-令 $a$ 和 $b$ 为两个数。和 $a + b$ 定义为将 $a$ 和 $b$ 结合后得到的**总**数量...
+[Translation of paragraph 1 in 日本語]
 
 </example>
 
@@ -205,7 +205,7 @@ second"
 exports[`rendered prompts inputTranslate minimal 1`] = `
 {
   "system": 
-"You are a professional translator. You will be given some text to translate, with some relevant background information. You need to translate the text into "日本語".
+"You are a professional translator. You will be given "English" text to translate. You need to translate the text into "日本語".
 
 <guidelines>
 1. From the perspective of the original author, consider what they want to express and accurately convey their meaning.
@@ -225,11 +225,9 @@ Output the translated text **ONLY**, without any additional explanations or note
 Hello Sam,
 I hope this email finds you well. ...
 
-## OUTPUT
+## OUTPUT (in 日本語)
 
-サムさんへ
-
-ご無沙汰しております。...
+[Translation in 日本語]
 </example>"
 ,
   "user": "sample text",
@@ -239,7 +237,7 @@ I hope this email finds you well. ...
 exports[`rendered prompts inputTranslate full 1`] = `
 {
   "system": 
-"You are a professional translator. You will be given some text to translate, with some relevant background information. You need to translate the text into "日本語".
+"You are a professional translator. You will be given "English" text to translate. You need to translate the text into "日本語".
 
 <guidelines>
 1. From the perspective of the original author, consider what they want to express and accurately convey their meaning.
@@ -261,11 +259,9 @@ Output the translated text **ONLY**, without any additional explanations or note
 Hello Sam,
 I hope this email finds you well. ...
 
-## OUTPUT
+## OUTPUT (in 日本語)
 
-サムさんへ
-
-ご無沙汰しております。...
+[Translation in 日本語]
 </example>
 
 <page>
@@ -302,7 +298,7 @@ translate this definition into 日本語, ensuring that the meaning is preserved
 exports[`rendered prompts dictionaryTranslate full 1`] = `
 {
   "system": 
-"You will be given a dictionary definition for a word or phrase.
+"You will be given the dictionary definition for "bank".
 
 <task>
 translate this definition into 日本語, ensuring that the meaning is preserved accurately. Use clear and concise language suitable for a general audience.
@@ -340,15 +336,15 @@ exports[`rendered prompts explain minimal 1`] = `
 
 The concept of <target>superposition</target> is fundamental in quantum mechanics. It refers to ...
 
-## OUTPUT
+## OUTPUT (all prose in 日本語)
 
 {
-    "context_explanation": "In the context of quantum mechanics, \`superposition\` ...",
-    "text_explanation": "\`Superposition\` is a fundamental concept in quantum ...",
+    "context_explanation": "[In 日本語: what \`superposition\` means in this quantum-mechanics context ...]",
+    "text_explanation": "[In 日本語: a detailed explanation of \`superposition\` itself ...]",
     "examples": [
         {
             "text": "**Superposition** in quantum mechanics allows ...",
-            "translation": "**量子力学における**重ね合わせは..."
+            "translation": "[The example sentence translated into 日本語]"
         },
         ... more examples ...
     ]
@@ -383,15 +379,15 @@ exports[`rendered prompts explain full 1`] = `
 
 The concept of <target>superposition</target> is fundamental in quantum mechanics. It refers to ...
 
-## OUTPUT
+## OUTPUT (all prose in 日本語)
 
 {
-    "context_explanation": "In the context of quantum mechanics, \`superposition\` ...",
-    "text_explanation": "\`Superposition\` is a fundamental concept in quantum ...",
+    "context_explanation": "[In 日本語: what \`superposition\` means in this quantum-mechanics context ...]",
+    "text_explanation": "[In 日本語: a detailed explanation of \`superposition\` itself ...]",
     "examples": [
         {
             "text": "**Superposition** in quantum mechanics allows ...",
-            "translation": "**量子力学における**重ね合わせは..."
+            "translation": "[The example sentence translated into 日本語]"
         },
         ... more examples ...
     ]

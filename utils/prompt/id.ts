@@ -15,10 +15,22 @@ export type PromptId =
 	| "dictionaryTranslate"
 	| "explain";
 
+/**
+ * Bumped by hand whenever prompt *text* changes in a way that should invalidate
+ * cached model output. It is part of the cache key, so old entries are ignored
+ * rather than served against a prompt that no longer produced them.
+ */
+export const PROMPT_REVISION = 2;
+
 /** What each prompt's `parse` produces from a completed (non-streamed) response. */
 export type PromptOutputMap = {
 	translate: string;
-	batchTranslate: string[];
+	/**
+	 * Sparse by design: one slot per input paragraph, `undefined` where the model
+	 * dropped or blanked an entry. Indexed off the `==== <index>` divider, so a
+	 * missing entry leaves a hole instead of shifting every later translation.
+	 */
+	batchTranslate: (string | undefined)[];
 	inputTranslate: string;
 	dictionaryTranslate: string;
 	explain: ExplainOutput;

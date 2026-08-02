@@ -1,19 +1,6 @@
-import type { PageContext } from "~/utils/types";
-import { definePrompt, type PromptLang } from "../dsl";
+import { definePrompt } from "../dsl";
 import { join, numbered, section, when } from "../text";
-import {
-	pageSection,
-	type Surr,
-	targetSpan,
-	translatorPreamble,
-} from "./shared";
-
-export type TranslateCtx = {
-	text: string;
-	lang: PromptLang;
-	page?: PageContext;
-	surr?: Surr;
-};
+import { pageSection, targetSpan, translatorPreamble } from "./shared";
 
 const BANK_EXAMPLE = `<example>
 ## INPUT
@@ -39,12 +26,12 @@ Why does the sky appear blue?
 </example>`;
 
 /** Translate a single span of text, shown with its surrounding context. */
-export const translatePrompt = definePrompt<TranslateCtx>({
+export const translatePrompt = definePrompt<"translate">({
 	id: "translate",
 	input: "string",
 	system: (ctx) =>
 		join(
-			translatorPreamble(ctx.lang.dst),
+			translatorPreamble(ctx.lang),
 			section(
 				"instructions",
 				numbered(

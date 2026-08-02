@@ -47,6 +47,17 @@ describe("buildPromptContext", () => {
 		);
 	});
 
+	test("extras cannot override the resolved text and language", () => {
+		const ctx = buildPromptContext(
+			{ text: "stale", lang: { dst: "stale" } } as unknown as object,
+			"fresh",
+			"en",
+			"ja",
+		);
+		expect(ctx.text).toBe("fresh");
+		expect(ctx.lang).toEqual({ src: "English", dst: "日本語" });
+	});
+
 	test("carries the text and extra context keys", () => {
 		const ctx = buildPromptContext(
 			{ page: { title: "T", domain: "d" }, word: "bank" },

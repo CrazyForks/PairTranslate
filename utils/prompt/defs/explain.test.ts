@@ -2,6 +2,8 @@ import { describe, expect, test } from "bun:test";
 import { EXPLAIN_SCHEMA } from "../explain-schema";
 import { explainPrompt } from "./explain";
 
+const CTX = { text: "sample", lang: { dst: "日本語" } };
+
 const VALID = {
 	context_explanation: "in context",
 	text_explanation: "the text",
@@ -28,28 +30,31 @@ describe("EXPLAIN_SCHEMA", () => {
 
 describe("explainPrompt.parse", () => {
 	test("accepts bare JSON", () => {
-		expect(explainPrompt.parse(JSON.stringify(VALID))).toEqual(VALID);
+		expect(explainPrompt.parse(JSON.stringify(VALID), CTX)).toEqual(VALID);
 	});
 
 	test("accepts JSON inside a fenced code block", () => {
 		const fenced = `\`\`\`json\n${JSON.stringify(VALID)}\n\`\`\``;
-		expect(explainPrompt.parse(fenced)).toEqual(VALID);
+		expect(explainPrompt.parse(fenced, CTX)).toEqual(VALID);
 	});
 
 	test("treats examples as optional", () => {
 		const { examples: _omitted, ...withoutExamples } = VALID;
-		expect(explainPrompt.parse(JSON.stringify(withoutExamples))).toEqual(
+		expect(explainPrompt.parse(JSON.stringify(withoutExamples), CTX)).toEqual(
 			withoutExamples,
 		);
 	});
 
 	test("throws on malformed JSON", () => {
-		expect(() => explainPrompt.parse("not json at all")).toThrow();
+		expect(() => explainPrompt.parse("not json at all", CTX)).toThrow();
 	});
 
 	test("throws when a required field is missing", () => {
 		expect(() =>
-			explainPrompt.parse(JSON.stringify({ text_explanation: "only one" })),
+			explainPrompt.parse(
+				JSON.stringify({ text_explanation: "only one" }),
+				CTX,
+			),
 		).toThrow();
 	});
 });

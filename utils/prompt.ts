@@ -23,6 +23,12 @@ export const PROMPTS: PromptRegistry = {
 	explain: explainPrompt,
 };
 
+export type {
+	PromptCtxExtra,
+	PromptCtxMap,
+	PromptLang,
+} from "./prompt/ctx";
 export type { ExplainOutput } from "./prompt/explain-schema";
 export { EXPLAIN_SCHEMA } from "./prompt/explain-schema";
 export type { PromptId, PromptOutput } from "./prompt/id";
+export { PROMPT_REVISION } from "./prompt/id";

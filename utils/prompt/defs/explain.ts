@@ -1,31 +1,23 @@
 import { autoStripMarkdown } from "~/utils/json-autocomplete";
-import type { PageContext } from "~/utils/types";
-import { definePrompt, type PromptLang } from "../dsl";
+import { definePrompt } from "../dsl";
 import { EXPLAIN_SCHEMA, ExplainOutput } from "../explain-schema";
 import { join, numbered, section, when } from "../text";
-import { pageSection, type Surr, targetSpan } from "./shared";
+import { pageSection, targetSpan } from "./shared";
 
-export type ExplainCtx = {
-	text: string;
-	lang: PromptLang;
-	page?: PageContext;
-	surr?: Surr;
-};
-
-const EXAMPLE = `<example>
+const explainExample = (dst: string) => `<example>
 ## INPUT
 
 The concept of <target>superposition</target> is fundamental in quantum mechanics. It refers to ...
 
-## OUTPUT
+## OUTPUT (all prose in ${dst})
 
 {
-    "context_explanation": "In the context of quantum mechanics, \`superposition\` ...",
-    "text_explanation": "\`Superposition\` is a fundamental concept in quantum ...",
+    "context_explanation": "[In ${dst}: what \`superposition\` means in this quantum-mechanics context ...]",
+    "text_explanation": "[In ${dst}: a detailed explanation of \`superposition\` itself ...]",
     "examples": [
         {
             "text": "**Superposition** in quantum mechanics allows ...",
-            "translation": "**量子力学における**重ね合わせは..."
+            "translation": "[The example sentence translated into ${dst}]"
         },
         ... more examples ...
     ]
@@ -42,13 +34,13 @@ const formatSection = (dst: string) =>
 				"`examples`: Provide 2-3 examples to illustrate the meaning of the <target> word/phase in similar contexts. Each example should include:",
 				"   - `text`: An example sentence or phrase using the <target> word/phase.",
 				`   - \`translation\`: The translation of the example into "${dst}".`,
-			].join("\n"),
+			],
 			"Markdown format is supported in your explanation. Use it to enhance clarity and presentation.",
 		),
 	);
 
 /** Explain a term in context, returning structured JSON. */
-export const explainPrompt = definePrompt<ExplainCtx, ExplainOutput>({
+export const explainPrompt = definePrompt<"explain">({
 	id: "explain",
 	input: "string",
 	schema: EXPLAIN_SCHEMA,
@@ -66,7 +58,7 @@ export const explainPrompt = definePrompt<ExplainCtx, ExplainOutput>({
 					),
 				),
 			),
-			EXAMPLE,
+			explainExample(ctx.lang.dst),
 			pageSection(ctx.page),
 		),
 	user: (ctx) => targetSpan(ctx.text, ctx.surr),
